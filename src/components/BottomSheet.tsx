@@ -15,9 +15,6 @@ export const BottomSheet: FC<BottomSheetProps> = ({
   title,
 }) => {
   const sheetRef = useRef<HTMLDivElement>(null);
-  const [startY, setStartY] = useState<number | null>(null);
-  const [currentY, setCurrentY] = useState<number | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -54,35 +51,7 @@ export const BottomSheet: FC<BottomSheetProps> = ({
     };
   }, [isOpen]);
 
-  const handleTouchStart = (e: TouchEvent) => {
-    setStartY(e.touches[0].clientY);
-  };
-
-  const handleTouchMove = (e: TouchEvent) => {
-    if (startY === null) return;
-
-    const currentY = e.touches[0].clientY;
-    const diff = currentY - startY;
-
-    if (diff > 0) {
-      setCurrentY(diff);
-      setIsDragging(true);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (currentY && currentY > 150) {
-      onClose();
-    }
-    setStartY(null);
-    setCurrentY(null);
-    setIsDragging(false);
-  };
-
   if (!isVisible) return null;
-
-  const transform = currentY ? `translateY(${currentY}px)` : "";
-  const transition = isDragging ? "" : "transform 0.3s ease-out";
 
   return (
     <>
@@ -96,12 +65,8 @@ export const BottomSheet: FC<BottomSheetProps> = ({
           inset-x-0 bottom-0 rounded-t-[32px] sm:bottom-auto"
         ref={sheetRef}
         style={{
-          transform: `${transform} ${isDragging ? "" : "sm:none"}`,
-          transition,
+          transition: "transform 0.3s ease-out",
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         <div className="absolute left-0 right-0 top-0 z-30 mx-auto h-1 w-12 -translate-y-1/2 rounded-full bg-gray-3 sm:hidden" />
         <div className="flex p-4">

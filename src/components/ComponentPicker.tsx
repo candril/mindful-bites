@@ -1,5 +1,7 @@
 import React from "react";
 import { X, Plus } from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 interface ComponentPickerProps {
   components: string[];
@@ -42,7 +44,7 @@ export function ComponentPicker({
     <div className="space-y-3">
       <div className="flex gap-2">
         <div className="flex-1 relative">
-          <input
+          <Input
             type="text"
             value={newComponent}
             onChange={(e) => setNewComponent(e.target.value)}
@@ -66,14 +68,12 @@ export function ComponentPicker({
             </button>
           )}
         </div>
-        <button
-          type="button"
+        <Button
           onClick={() => newComponent && handleAdd(newComponent)}
-          className="rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-700 
-            hover:bg-blue-100 border border-blue-200"
+          variant="outline"
         >
           Add
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
@@ -83,7 +83,7 @@ export function ComponentPicker({
             <button
               key={name}
               type="button"
-              onClick={() => (isSelected ? onRemove(name) : onAdd(name))}
+              onClick={() => (isSelected ? onRemove(name) : handleAdd(name))}
               className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-all duration-200
                 ${
                   isSelected

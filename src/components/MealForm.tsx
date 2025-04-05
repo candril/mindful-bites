@@ -8,6 +8,7 @@ import {
 } from "../data/meals";
 import { OptionPicker } from "./OptionPicker";
 import { ComponentPicker } from "./ComponentPicker";
+import { Button } from "./ui/button";
 
 export const MealForm: React.FC<{
   date: Date;
@@ -38,7 +39,7 @@ export const MealForm: React.FC<{
   return (
     <form
       onSubmit={handleFormSubmit}
-      className="space-y-6 bg-white p-6 rounded-xl"
+      className="flex flex-col space-y-6 bg-white p-6 rounded-xl"
     >
       <div className="space-y-1.5">
         <label className="block text-sm text-gray-600">
@@ -88,13 +89,9 @@ export const MealForm: React.FC<{
         />
       </div>
 
-      <button
-        type="submit"
-        className="w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white 
-          hover:bg-blue-700 transition-colors"
-      >
+      <Button type="submit" className="self-end">
         Save Meal Entry
-      </button>
+      </Button>
     </form>
   );
 };

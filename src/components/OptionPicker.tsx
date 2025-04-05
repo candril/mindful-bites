@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
 interface Option<T extends string> {
   value: T;
   label: string;
@@ -22,22 +25,29 @@ export function OptionPicker<T extends string>({
   return (
     <div className={`grid grid-cols-${columns} gap-1.5`}>
       {options.map((option) => (
-        <button
+        <Button
           key={option.value}
-          type="button"
-          onClick={() => onChange(option.value)}
-          className={`rounded-lg px-3 py-2 text-sm transition-colors ${
-            value === option.value
-              ? variant === "color" && option.color
-                ? `${option.color} text-white`
-                : variant === "dark"
-                  ? "bg-gray-900 text-white"
-                  : "bg-blue-50 text-blue-700 border border-blue-200"
-              : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
-          }`}
+          variant={value === option.value ? "secondary" : "outline"}
+          onClick={(e) => {
+            e.preventDefault();
+            return onChange(option.value);
+          }}
+          className={cn(
+            "px-3 py-2 text-sm h-auto",
+            value === option.value &&
+              variant === "color" &&
+              option.color &&
+              `${option.color} text-white`,
+            value === option.value &&
+              variant === "dark" &&
+              "bg-gray-900 text-white",
+            value === option.value &&
+              variant === "default" &&
+              "bg-blue-50 text-blue-700 border border-blue-200",
+          )}
         >
           {option.label}
-        </button>
+        </Button>
       ))}
     </div>
   );

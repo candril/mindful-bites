@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useRef, useState, TouchEvent } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
 interface BottomSheetProps {

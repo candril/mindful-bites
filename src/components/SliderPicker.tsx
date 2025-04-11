@@ -1,4 +1,3 @@
-import { FunctionComponent } from "react";
 import { Slider } from "./ui/slider";
 
 interface Option<T extends string> {
@@ -11,7 +10,6 @@ interface Props<T extends string> {
   options: Option<T>[];
   value: T;
   onChange: (value: T) => void;
-  // variant?: "default" | "color" | "dark";
 }
 
 export function SliderPicker<T extends string>({

@@ -118,39 +118,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-::view-transition-old(sheet),
-::view-transition-new(sheet) {
-  animation: none;
-  mix-blend-mode: normal;
-  height: 100%;
-}
-
-::view-transition-old(sheet) {
-  z-index: 1;
-}
-
-::view-transition-new(sheet) {
-  z-index: 9999;
-}
-
-::view-transition-old(overlay),
-::view-transition-new(overlay) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-.sheet-enter {
-  view-transition-name: sheet;
-}
-
-.overlay-enter {
-  view-transition-name: overlay;
-}
-
-@media (min-width: 640px) {
-  ::view-transition-old(sheet),
-  ::view-transition-new(sheet) {
-    height: auto;
-  }
-}

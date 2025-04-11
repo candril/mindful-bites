@@ -53,7 +53,7 @@ export const CalendarGrid: FC<CalendarGridProps> = ({
               <span
                 className={`inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-lg text-xs sm:text-sm font-medium ${
                   day.isToday
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : day.isCurrentMonth
                       ? "text-gray-900"
                       : "text-gray-400"

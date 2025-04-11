@@ -1,14 +1,7 @@
+import { ratingColorMap } from "@/data/getMealScore";
 import { FC } from "react";
 
 export type RatingColor = "bad" | "poor" | "average" | "good" | "excellent";
-
-const ratingColorMap: Record<RatingColor, string> = {
-  bad: "bg-red-600",
-  poor: "bg-orange-400",
-  average: "bg-yellow-400",
-  good: "bg-green-400",
-  excellent: "bg-green-700",
-};
 
 export const Dot: FC<{ rating: RatingColor }> = ({ rating = "bad" }) => (
   <div

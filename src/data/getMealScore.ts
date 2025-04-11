@@ -1,6 +1,14 @@
 import { RatingColor } from "../components/Dot";
 import { MealEntry } from "../data/meals";
 
+export const ratingColorMap: Record<RatingColor, string> = {
+  bad: "bg-red-600",
+  poor: "bg-orange-400",
+  average: "bg-yellow-400",
+  good: "bg-green-400",
+  excellent: "bg-green-700",
+};
+
 const mealColorCoding: RatingColor[] = [
   "bad",
   "poor",

@@ -17,17 +17,19 @@ export function SliderPicker<T extends string>({
   onChange,
   value,
 }: Props<T>) {
+  const selectedIndex = options.findIndex((o) => o.value === value);
   return (
     <div className="flex flex-col space-y-3">
       <Slider
         max={options.length - 1}
         min={0}
         step={1}
+        value={selectedIndex !== undefined ? [selectedIndex] : undefined}
         defaultValue={[options.length / 2]}
         onValueChange={([v]) => onChange(options[v].value)}
       />
       <div className="text-sm opacity-60 self-end">
-        {options.find((o) => o.value === value)?.label}
+        {options[selectedIndex]?.label}
       </div>
     </div>
   );

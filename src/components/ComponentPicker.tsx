@@ -69,7 +69,10 @@ export function ComponentPicker({
           )}
         </div>
         <Button
-          onClick={() => newComponent && handleAdd(newComponent)}
+          onClick={(event) => {
+            event.preventDefault();
+            return newComponent && handleAdd(newComponent);
+          }}
           variant="outline"
         >
           Add

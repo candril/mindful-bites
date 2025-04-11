@@ -30,7 +30,7 @@ export const HEALTH_RATING_OPTIONS: {
 ];
 
 export const PORTION_SIZE_OPTIONS: { value: PortionSize; label: string }[] = [
-  { value: "small", label: "Hara hachi bun me" },
+  { value: "small", label: "Moderat" },
   { value: "just-right", label: "Normal" },
   { value: "large", label: "Zviel" },
 ];

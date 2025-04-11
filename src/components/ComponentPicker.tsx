@@ -41,7 +41,7 @@ export function ComponentPicker({
     .slice(0, 15);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex gap-2">
         <div className="flex-1 relative">
           <Input
@@ -68,6 +68,7 @@ export function ComponentPicker({
             </button>
           )}
         </div>
+
         <Button
           onClick={(event) => {
             event.preventDefault();
@@ -79,7 +80,7 @@ export function ComponentPicker({
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap gap-3">
         {componentsValue.map((component) => {
           const { isSelected, name } = component;
           return (
@@ -87,7 +88,7 @@ export function ComponentPicker({
               key={name}
               type="button"
               onClick={() => (isSelected ? onRemove(name) : handleAdd(name))}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-all duration-200
+              className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-all duration-200
                 ${
                   isSelected
                     ? "bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100"

@@ -39,10 +39,10 @@ export const MealForm: React.FC<{
   return (
     <form
       onSubmit={handleFormSubmit}
-      className="flex flex-col space-y-6 bg-white p-6 rounded-xl"
+      className="flex flex-col space-y-10 bg-white"
     >
-      <div className="space-y-1.5">
-        <label className="block text-sm text-gray-600">
+      <div className="space-y-3">
+        <label className="block text-sm font-bold opacity-60">
           What type of meal was it?
         </label>
         <OptionPicker
@@ -50,34 +50,12 @@ export const MealForm: React.FC<{
           value={mealType}
           onChange={setMealType}
           columns={4}
+          variant="dark"
         />
       </div>
 
-      <div className="space-y-1.5">
-        <label className="block text-sm text-gray-600">What did you eat?</label>
-        <ComponentPicker
-          components={components}
-          commonComponents={commonComponents}
-          onAdd={addComponent}
-          onRemove={removeComponent}
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="block text-sm text-gray-600">
-          How healthy was it?
-        </label>
-        <OptionPicker
-          options={HEALTH_RATING_OPTIONS}
-          value={healthRating}
-          onChange={setHealthRating}
-          columns={5}
-          variant="color"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="block text-sm text-gray-600">
+      <div className="space-y-3">
+        <label className="block text-sm font-bold opacity-60">
           How much did you eat?
         </label>
         <OptionPicker
@@ -86,6 +64,31 @@ export const MealForm: React.FC<{
           onChange={setPortionSize}
           columns={3}
           variant="dark"
+        />
+      </div>
+
+      <div className="space-y-3">
+        <label className="block text-sm font-bold opacity-60">
+          What did you eat?
+        </label>
+        <ComponentPicker
+          components={components}
+          commonComponents={commonComponents}
+          onAdd={addComponent}
+          onRemove={removeComponent}
+        />
+      </div>
+
+      <div className="space-y-3">
+        <label className="block text-sm font-bold opacity-60">
+          How healthy was it?
+        </label>
+        <OptionPicker
+          options={HEALTH_RATING_OPTIONS}
+          value={healthRating}
+          onChange={setHealthRating}
+          columns={1}
+          variant="color"
         />
       </div>
 

@@ -15,6 +15,14 @@ interface OptionPickerProps<T extends string> {
   variant?: "default" | "color" | "dark";
 }
 
+const columnClasses: { [col: number]: string } = {
+  1: "grid-cols-1",
+  2: "grid-cols-2",
+  3: "grid-cols-3",
+  4: "grid-cols-4",
+  5: "grid-cols-5",
+};
+
 export function OptionPicker<T extends string>({
   options,
   value,
@@ -23,7 +31,7 @@ export function OptionPicker<T extends string>({
   variant = "default",
 }: OptionPickerProps<T>) {
   return (
-    <div className={`grid grid-cols-${columns} gap-1.5`}>
+    <div className={`grid ${columnClasses[columns] ?? "grid-cols-3"} gap-1.5`}>
       {options.map((option) => (
         <Button
           key={option.value}

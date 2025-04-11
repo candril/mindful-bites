@@ -43,7 +43,7 @@ export const CalendarGrid: FC<CalendarGridProps> = ({
           {days.map((day) => (
             <button
               key={day.date.getTime()}
-              onClick={() => onDayClick(day)}
+              onClick={() => day.isCurrentMonth && onDayClick(day)}
               className={`relative flex flex-col group min-h-[60px] sm:min-h-[120px] rounded-xl sm:rounded-2xl p-2 sm:p-3 transition-all ${
                 day.isCurrentMonth
                   ? "bg-white hover:shadow-lg hover:scale-[1.02] border border-gray-100"
@@ -55,8 +55,8 @@ export const CalendarGrid: FC<CalendarGridProps> = ({
                   day.isToday
                     ? "bg-blue-600 text-white"
                     : day.isCurrentMonth
-                      ? "bg-gray-50 text-gray-900"
-                      : "bg-gray-100 text-gray-400"
+                      ? "text-gray-900"
+                      : "text-gray-400"
                 }`}
               >
                 {day.date.getDate()}

@@ -4,12 +4,19 @@ import { useMeals } from "./data/useStorage";
 import { useState } from "react";
 import { getMealScore } from "./data/getMealScore";
 import { Dot } from "./components/Dot";
-import { BottomSheet } from "./components/BottomSheet";
 import { getCommonComponents } from "./data/getCommonComponents";
 import { MealForm } from "./components/MealForm";
 import { MealPicker } from "./components/MealPicker";
 import { Day } from "./components/CalendarGrid";
 import { MealEntry } from "./data/meals";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "./components/ui/drawer";
+import { Button } from "./components/ui/button";
+import { X } from "lucide-react";
 
 function App() {
   const [month, setMonth] = useState(new Date());
@@ -101,13 +108,27 @@ function App() {
         }
       />
 
-      <BottomSheet
-        isOpen={selectedDay !== null}
-        onClose={() => reset()}
-        title={selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}
+      <Drawer
+        open={selectedDay !== null}
+        onOpenChange={(open) => !open && reset()}
       >
-        {getSheetContent()}
-      </BottomSheet>
+        <DrawerContent className="max-w-md m-auto p-4">
+          <DrawerHeader className="flex flex-row">
+            <DrawerTitle className="flex-1 self-center justify-center">
+              {selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}
+            </DrawerTitle>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={reset}
+              className="shadow-none border-none"
+            >
+              <X className="size-4" />
+            </Button>
+          </DrawerHeader>
+          <div className="overflow-auto">{getSheetContent()}</div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

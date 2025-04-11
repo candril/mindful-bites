@@ -46,7 +46,6 @@ export function useMeals() {
   const [entries, setEntries] = useState<MealEntry[]>(() => loadEntries());
 
   useEffect(() => {
-    console.log("fetch from server");
     fetch("/api/bites")
       .then((res) => res.json())
       .then((data) => {
@@ -55,7 +54,6 @@ export function useMeals() {
         }
 
         storeEntries(data);
-        console.log("store result from server", data);
         return setEntries(data);
       });
   }, []);

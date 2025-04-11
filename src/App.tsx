@@ -112,7 +112,7 @@ function App() {
         open={selectedDay !== null}
         onOpenChange={(open) => !open && reset()}
       >
-        <DrawerContent className="max-w-l m-auto p-4 space-y-8">
+        <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
           <DrawerHeader className="flex flex-row p-0">
             <DrawerTitle className="flex-1 self-center justify-center text-3xl">
               {selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}

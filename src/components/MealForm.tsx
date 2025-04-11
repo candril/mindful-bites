@@ -9,7 +9,6 @@ import {
 import { OptionPicker } from "./OptionPicker";
 import { ComponentPicker } from "./ComponentPicker";
 import { Button } from "./ui/button";
-import { Slider } from "./ui/slider";
 import { SliderPicker } from "./SliderPicker";
 
 export const MealForm: React.FC<{

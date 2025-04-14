@@ -17,6 +17,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
       <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
         {format(currentMonth, "LLLL yyyy")}
       </h2>
+
       <div className="flex space-x-2 sm:space-x-3">
         <button
           onClick={onPrevMonth}

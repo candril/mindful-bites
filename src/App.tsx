@@ -19,20 +19,11 @@ import { Button } from "./components/ui/button";
 import { X } from "lucide-react";
 
 function App() {
-  const [month, setMonth] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
   const [selectedMealEnty, setSelectedMealEntry] = useState<MealEntry | null>(
     null,
   );
-
-  const handlePrevMonth = () => {
-    setMonth(subMonths(month, 1));
-  };
-
-  const handleNextMonth = () => {
-    setMonth(addMonths(month, 1));
-  };
 
   const handleDayClick = (day: Day) => {
     setSelectedDay(day);
@@ -97,9 +88,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-svh">
       <Calendar
-        currentMonth={month}
-        onPrevMonth={handlePrevMonth}
-        onNextMonth={handleNextMonth}
+        startMonth={new Date()}
         onDayClick={handleDayClick}
         additionalContent={(day) =>
           getDayEntries(day.date).map((m) => (

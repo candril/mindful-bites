@@ -8,7 +8,7 @@ import {
   startOfMonth,
   subDays,
 } from "date-fns";
-import { FC, forwardRef, ReactNode } from "react";
+import { forwardRef, ReactNode } from "react";
 
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const weekDaysMobile = ["M", "T", "W", "T", "F", "S", "S"];

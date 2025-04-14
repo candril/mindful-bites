@@ -5,8 +5,6 @@ import { addMonths } from "date-fns";
 
 interface CalendarProps {
   startMonth: Date;
-  onPrevMonth: () => void;
-  onNextMonth: () => void;
   onDayClick: (day: Day) => void;
   additionalContent?: (day: Day) => ReactNode;
 }

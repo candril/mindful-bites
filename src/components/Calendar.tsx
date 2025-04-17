@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { CalendarGrid, Day } from "./CalendarGrid";
 import { CalendarHeader } from "./CalendarHeader";
 import { addMonths } from "date-fns";
@@ -36,9 +36,8 @@ function useMonthList(startMonth: Date) {
     goForward: () => {
       if (monthIndex === months.length - 1) {
         setMonths([...months, addMonths(months[months.length - 1], 1)]);
-      } else {
-        setMonthIndex(monthIndex + 1);
       }
+      setMonthIndex(monthIndex + 1);
     },
   };
 }
@@ -52,24 +51,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     useMonthList(startMonth);
 
   const ref = useRef<HTMLDivElement>(null);
-  const refBlock = useRef<boolean>(false);
-
-  const handleScroll = () => {
-    if (ref.current) {
-      const scrollPosition = ref.current.scrollLeft;
-      const containerWidth = ref.current.clientWidth;
-      const visibleIndex = Math.round(scrollPosition / containerWidth);
-      refBlock.current = true;
-      setMonthIndex(visibleIndex);
-      setTimeout(() => (refBlock.current = false), 200);
-    }
-  };
-
-  useEffect(() => {
-    if (ref.current && !refBlock.current) {
-      ref.current.scrollLeft = monthIndex * ref.current.clientWidth;
-    }
-  }, [monthIndex]);
+  const handleScroll = useScrollHander(ref, setMonthIndex, months, monthIndex);
 
   return (
     <div className="bg-gray-50 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border border-gray-1">
@@ -97,3 +79,44 @@ export const Calendar: React.FC<CalendarProps> = ({
     </div>
   );
 };
+
+function useScrollHander(
+  ref: RefObject<HTMLDivElement | null>,
+  setMonthIndex: (index: number) => void,
+  months: Date[],
+  monthIndex: number,
+) {
+  const updateBlockedRef = useRef<boolean>(false);
+
+  const handleScroll = () => {
+    if (ref.current) {
+      const scrollPosition = ref.current.scrollLeft;
+      const containerWidth = ref.current.clientWidth;
+      const visibleIndex = Math.round(scrollPosition / containerWidth);
+      updateBlockedRef.current = true;
+      setMonthIndex(visibleIndex);
+      setTimeout(() => (updateBlockedRef.current = false), 200);
+    }
+  };
+
+  const previousIndexRef = useRef(0);
+  const previousMonthCountRef = useRef(months.length);
+
+  useEffect(() => {
+    if (ref.current) {
+      if (
+        previousIndexRef.current === monthIndex &&
+        previousMonthCountRef.current !== months.length
+      ) {
+        ref.current.scrollLeft = 0;
+      } else if (!updateBlockedRef.current) {
+        ref.current.scrollLeft = monthIndex * ref.current.clientWidth;
+      }
+    }
+
+    previousIndexRef.current = monthIndex;
+    previousMonthCountRef.current = months.length;
+  }, [months.length, monthIndex]);
+
+  return handleScroll;
+}

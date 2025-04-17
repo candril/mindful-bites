@@ -52,18 +52,21 @@ export const Calendar: React.FC<CalendarProps> = ({
     useMonthList(startMonth);
 
   const ref = useRef<HTMLDivElement>(null);
+  const refBlock = useRef<boolean>(false);
 
   const handleScroll = () => {
     if (ref.current) {
       const scrollPosition = ref.current.scrollLeft;
       const containerWidth = ref.current.clientWidth;
       const visibleIndex = Math.round(scrollPosition / containerWidth);
+      refBlock.current = true;
       setMonthIndex(visibleIndex);
+      setTimeout(() => (refBlock.current = false), 200);
     }
   };
 
   useEffect(() => {
-    if (ref.current) {
+    if (ref.current && !refBlock.current) {
       ref.current.scrollLeft = monthIndex * ref.current.clientWidth;
     }
   }, [monthIndex]);
@@ -78,13 +81,13 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       <div
         ref={ref}
-        className="flex snap-x snap-mandatory snap-always overflow-x-auto"
+        className="flex snap-x snap-mandatory overflow-x-auto"
         onScroll={handleScroll}
       >
         {months.map((m) => (
           <CalendarGrid
             key={m.getTime()}
-            className="shrink-0 w-screen snap-center"
+            className="shrink-0 w-screen snap-center snap-always"
             currentMonth={m}
             onDayClick={onDayClick}
             additionalContent={additionalContent}

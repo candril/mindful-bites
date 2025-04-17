@@ -2,6 +2,7 @@ import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { CalendarGrid, Day } from "./CalendarGrid";
 import { CalendarHeader } from "./CalendarHeader";
 import { addMonths } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface CalendarProps {
   startMonth: Date;
@@ -9,52 +10,27 @@ interface CalendarProps {
   additionalContent?: (day: Day) => ReactNode;
 }
 
-function useMonthList(startMonth: Date) {
-  const [monthIndex, setMonthIndex] = useState<number>(2);
-  const [months, setMonths] = useState<Date[]>(() => [
-    addMonths(startMonth, -2),
-    addMonths(startMonth, -1),
-    startMonth,
-    addMonths(startMonth, 1),
-    addMonths(startMonth, 2),
-  ]);
-
-  const currentMonth = months[monthIndex];
-
-  return {
-    currentMonth,
-    months,
-    monthIndex,
-    setMonthIndex,
-    goBack: () => {
-      if (monthIndex === 0) {
-        setMonths([addMonths(months[0], -1), ...months]);
-      } else {
-        setMonthIndex(monthIndex - 1);
-      }
-    },
-    goForward: () => {
-      if (monthIndex === months.length - 1) {
-        setMonths([...months, addMonths(months[months.length - 1], 1)]);
-      }
-      setMonthIndex(monthIndex + 1);
-    },
-  };
-}
-
 export const Calendar: React.FC<CalendarProps> = ({
   startMonth,
   additionalContent,
   onDayClick,
 }) => {
-  const { months, monthIndex, setMonthIndex, currentMonth, goBack, goForward } =
-    useMonthList(startMonth);
-
   const ref = useRef<HTMLDivElement>(null);
-  const handleScroll = useScrollHander(ref, setMonthIndex, months, monthIndex);
+  const { handleScroll, months, currentMonth, goBack, goForward } =
+    useMonthList(startMonth, ref);
 
   return (
-    <div className="bg-gray-50 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border border-gray-1">
+    <div
+      className={cn(
+        "bg-gray-50",
+        "rounded-2xl",
+        "sm:rounded-3xl",
+        "shadow-xl",
+        "overflow-hidden",
+        "border",
+        "border-gray-1",
+      )}
+    >
       <CalendarHeader
         currentMonth={currentMonth}
         onPrevMonth={goBack}
@@ -68,7 +44,7 @@ export const Calendar: React.FC<CalendarProps> = ({
       >
         {months.map((m) => (
           <CalendarGrid
-            key={m.getTime()}
+            key={m.toISOString()}
             className="shrink-0 w-screen snap-center snap-always"
             currentMonth={m}
             onDayClick={onDayClick}
@@ -80,12 +56,19 @@ export const Calendar: React.FC<CalendarProps> = ({
   );
 };
 
-function useScrollHander(
-  ref: RefObject<HTMLDivElement | null>,
-  setMonthIndex: (index: number) => void,
-  months: Date[],
-  monthIndex: number,
-) {
+function useMonthList(startMonth: Date, ref: RefObject<HTMLDivElement | null>) {
+  const [monthIndex, setMonthIndex] = useState<number>(9);
+  const [months, setMonths] = useState<Date[]>(() => {
+    const result = [
+      ...getMoreMonths(startMonth, 8, -1),
+      startMonth,
+      ...getMoreMonths(startMonth, 2, 1),
+    ];
+    return result;
+  });
+
+  const currentMonth = months[monthIndex];
+
   const updateBlockedRef = useRef<boolean>(false);
 
   const handleScroll = () => {
@@ -94,6 +77,7 @@ function useScrollHander(
       const containerWidth = ref.current.clientWidth;
       const visibleIndex = Math.round(scrollPosition / containerWidth);
       updateBlockedRef.current = true;
+
       setMonthIndex(visibleIndex);
       setTimeout(() => (updateBlockedRef.current = false), 200);
     }
@@ -118,5 +102,34 @@ function useScrollHander(
     previousMonthCountRef.current = months.length;
   }, [months.length, monthIndex]);
 
-  return handleScroll;
+  return {
+    handleScroll,
+    currentMonth,
+    months,
+    goBack: () => {
+      if (monthIndex === 0) {
+        setMonths([...getMoreMonths(months[0], 1, -1), ...months]);
+      } else {
+        setMonthIndex(monthIndex - 1);
+      }
+    },
+    goForward: () => {
+      if (monthIndex === months.length - 1) {
+        setMonths([
+          ...months,
+          ...getMoreMonths(months[months.length - 1], 1, 1),
+        ]);
+      }
+      setMonthIndex(monthIndex + 1);
+    },
+  };
+}
+
+function getMoreMonths(start: Date, count: number, delta: number): Date[] {
+  const items = [];
+  for (let i = 0; i <= count; i++) {
+    items[i] = addMonths(start, delta * (i + 1));
+  }
+
+  return delta < 0 ? items.reverse() : items;
 }

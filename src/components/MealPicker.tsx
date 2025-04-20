@@ -1,5 +1,7 @@
 import React from "react";
 import { MEAL_TYPE_OPTIONS, MealEntry, MealType } from "../data/meals";
+import { getMealScore } from "../data/getMealScore";
+import { Dot } from "./Dot";
 import { Trash2, Plus } from "lucide-react";
 import { Button } from "./ui/button";
 
@@ -15,6 +17,7 @@ export const MealPicker: React.FC<{
         {meals.map((m) => {
           const typeName = getMealTypeName(m.mealType);
           const summary = getComponentSummary(m);
+          const rating = getMealScore(m);
           return (
             <div
               key={m.id}
@@ -22,7 +25,10 @@ export const MealPicker: React.FC<{
               onClick={() => onEntryClick(m)}
             >
               <div className="flex flex-col">
-                <span className="font-semibold">{typeName}</span>
+                <div className="flex items-center">
+                  <span className="font-semibold mr-2">{typeName}</span>
+                  <Dot rating={rating} />
+                </div>
                 <span className="text-sm text-muted-foreground">{summary}</span>
               </div>
               <Button

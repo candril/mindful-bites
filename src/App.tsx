@@ -5,7 +5,7 @@ import WelcomePage from "./pages/Welcome";
 function App() {
   return (
     <Switch>
-      <Route path="/calendar/:token">
+      <Route path="/:token/calendar">
         <CalendarPage />
       </Route>
 

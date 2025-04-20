@@ -1,7 +1,7 @@
 import { format, isSameDay } from "date-fns";
 import { Calendar } from "../components/Calendar";
 import { useMeals } from "../data/useStorage";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { getMealScore } from "../data/getMealScore";
 import { Dot } from "../components/Dot";
 import { getCommonComponents } from "../data/getCommonComponents";
@@ -18,9 +18,17 @@ import {
 import { Button } from "../components/ui/button";
 import { X } from "lucide-react";
 import { useParams } from "wouter";
+import { useUserInfo } from "@/data/useUserInfo";
 
 function CalendarPage() {
   const { token } = useParams();
+  const { setUserToken, user } = useUserInfo();
+
+  useEffect(() => {
+    if (token && token !== user?.token) {
+      setUserToken(token);
+    }
+  }, [setUserToken, token, user, user?.token]);
 
   if (!token) {
     return <div>Missing Token</div>;

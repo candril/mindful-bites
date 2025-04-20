@@ -25,7 +25,13 @@ async function updateBite(req: Request, context: Context) {
     });
   }
 
-  const { id } = context.params;
+  const { id, token } = context.params;
+  if (mealEntry.userToken !== token) {
+    return new Response(JSON.stringify({ error: "User token mismatch" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const supabase = getClient();
 
@@ -37,8 +43,10 @@ async function updateBite(req: Request, context: Context) {
       health_rating: mealEntry.healthRating,
       portion_size: mealEntry.portionSize,
       meal_type: mealEntry.mealType,
+      user_token: mealEntry.userToken,
     })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_token", token);
 
   if (error) {
     console.error(error);
@@ -54,9 +62,15 @@ async function updateBite(req: Request, context: Context) {
   });
 }
 
-async function getBites() {
+async function getBites(context: Context) {
   const supabase = getClient();
-  const { data, error } = await supabase.from("meal_entries").select("*");
+
+  const { token } = context.params;
+
+  const { data, error } = await supabase
+    .from("meal_entries")
+    .select("*")
+    .eq("user_token", token);
 
   if (error) {
     throw new Error("Failed to load bites");
@@ -69,22 +83,24 @@ async function getBites() {
     healthRating: entry.health_rating,
     portionSize: entry.portion_size,
     mealType: entry.meal_type,
+    userToken: entry.user_token,
   }));
 
   return new Response(JSON.stringify(mappedData), { status: 200 });
 }
 
 async function deleteBite(context: Context) {
-  const { id } = context.params;
+  const { id, token } = context.params;
 
-  if (!id) {
+  if (!id || !token) {
     return new Response(null, { status: 400 });
   }
   const supabase = getClient();
   const { error } = await supabase
     .from("meal_entries") // Replace 'bites' with your table name
     .delete()
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_token", token);
 
   if (error) {
     console.error(error);
@@ -113,6 +129,7 @@ async function createBite(req: Request) {
       health_rating: mealEntry.healthRating,
       portion_size: mealEntry.portionSize,
       meal_type: mealEntry.mealType,
+      user_token: mealEntry.userToken,
     },
   ]);
 
@@ -147,7 +164,7 @@ export default async (req: Request, context: Context) => {
       case "PUT":
         updateBite(req, context);
       case "GET":
-        return getBites();
+        return getBites(context);
       case "POST":
         return createBite(req);
       case "DELETE":
@@ -170,5 +187,5 @@ export default async (req: Request, context: Context) => {
 };
 
 export const config: Config = {
-  path: ["/api/bites", "/api/bites/:id"],
+  path: ["/api/users/:token/bites", "/api/users/:token/bites/:id"],
 };

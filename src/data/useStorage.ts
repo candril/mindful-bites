@@ -15,38 +15,30 @@ function storeEntries(entries: MealEntry[]) {
   localStorage.setItem("meal-entries", JSON.stringify(entries));
 }
 
-export function useStorage() {
-  return {
-    loadEntries,
-    storeEntries,
-  };
-}
-
-async function deleteEntryRemote(id: string) {
-  return fetch("/api/bites/" + id, {
+async function deleteEntryRemote(id: string, token: string) {
+  return fetch(`/api/users/${token}/bites/${id}`, {
     method: "DELETE",
   });
 }
-async function updateEntryRemote(entry: MealEntry) {
-  return fetch("/api/bites/" + entry.id, {
+async function updateEntryRemote(entry: MealEntry, user_token: string) {
+  return fetch(`/api/users/${user_token}/bites/${entry.id}`, {
     method: "PUT",
-    body: JSON.stringify(entry),
+    body: JSON.stringify({ ...entry, user_token }),
   });
 }
 
-async function createEntryRemote(entry: MealEntry) {
-  return fetch("/api/bites", {
+async function createEntryRemote(entry: MealEntry, userToken: string) {
+  return fetch(`/api/users/${userToken}/bites`, {
     method: "POST",
-    body: JSON.stringify(entry),
+    body: JSON.stringify({ ...entry, userToken }),
   });
 }
 
-export function useMeals() {
-  const { loadEntries, storeEntries } = useStorage();
+export function useMeals(token: string) {
   const [entries, setEntries] = useState<MealEntry[]>(() => loadEntries());
 
   useEffect(() => {
-    fetch("/api/bites")
+    fetch(`/api/users/${token}/bites`)
       .then((res) => res.json())
       .then((data) => {
         for (const entry of data) {
@@ -56,7 +48,7 @@ export function useMeals() {
         storeEntries(data);
         return setEntries(data);
       });
-  }, []);
+  }, [token]);
 
   const createEntry = useCallback(
     async (entry: MealEntry) => {
@@ -64,9 +56,9 @@ export function useMeals() {
       setEntries(updatedEntries);
       storeEntries(updatedEntries);
 
-      await createEntryRemote(entry);
+      await createEntryRemote(entry, token);
     },
-    [entries, storeEntries],
+    [entries, token],
   );
 
   const updateEntry = useCallback(
@@ -77,9 +69,9 @@ export function useMeals() {
       setEntries(updatedEntries);
       storeEntries(updatedEntries);
 
-      await updateEntryRemote(updatedEntry);
+      await updateEntryRemote(updatedEntry, token);
     },
-    [entries, storeEntries],
+    [entries, token],
   );
 
   const deleteEntry = useCallback(
@@ -88,9 +80,9 @@ export function useMeals() {
       setEntries(updatedEntries);
       storeEntries(updatedEntries);
 
-      await deleteEntryRemote(id);
+      await deleteEntryRemote(id, token);
     },
-    [entries, storeEntries],
+    [entries, token],
   );
 
   return {

@@ -1,6 +1,7 @@
 import React from "react";
 import { MEAL_TYPE_OPTIONS, MealEntry, MealType } from "../data/meals";
-import { Trash2 } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
+import { Button } from "./ui/button";
 
 export const MealPicker: React.FC<{
   meals: MealEntry[];
@@ -10,30 +11,43 @@ export const MealPicker: React.FC<{
 }> = ({ meals, onAddClick, onEntryClick, onRemoveClick }) => {
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col space-y-1">
-        {meals.map((m) => (
-          <div
-            className="flex border border-slate-300 rounded-md text-left"
-            key={m.id}
-          >
-            <button
-              className="flex-1 p-3 text-left"
+      <div className="flex flex-col space-y-4">
+        {meals.map((m) => {
+          const typeName = getMealTypeName(m.mealType);
+          const summary = getComponentSummary(m);
+          return (
+            <div
+              key={m.id}
+              className="flex items-center justify-between p-4 bg-card text-card-foreground border border-input rounded-lg shadow-sm hover:shadow transition-shadow cursor-pointer"
               onClick={() => onEntryClick(m)}
             >
-              {getMealTypeName(m.mealType)}: {getComponentSummary(m)}
-            </button>
-            <button className="pr-3" onClick={() => onRemoveClick(m)}>
-              <Trash2 size={20} strokeWidth={0.75} />
-            </button>
-          </div>
-        ))}
+              <div className="flex flex-col">
+                <span className="font-semibold">{typeName}</span>
+                <span className="text-sm text-muted-foreground">{summary}</span>
+              </div>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveClick(m);
+                }}
+              >
+                <Trash2 size={18} />
+              </Button>
+            </div>
+          );
+        })}
       </div>
-      <button
-        className="border text-white bg-blue-500 p-3 rounded-md mt-8"
+      <Button
+        variant="default"
+        size="default"
+        className="mt-6 w-full"
         onClick={onAddClick}
       >
+        <Plus size={18} />
         Add New
-      </button>
+      </Button>
     </div>
   );
 };

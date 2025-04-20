@@ -15,7 +15,7 @@ export type MealEntry = {
   healthRating: HealthRating;
   portionSize: PortionSize;
   mealType: MealType;
-  userToken: string;
+  userToken?: string;
 };
 
 export const HEALTH_RATING_OPTIONS: {

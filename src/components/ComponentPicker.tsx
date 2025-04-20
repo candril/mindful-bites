@@ -54,8 +54,8 @@ export function ComponentPicker({
                 if (newComponent) handleAdd(newComponent);
               }
             }}
-            className="w-full rounded-lg p-3 pr-8 border-gray-200 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="Add custom meal..."
+            className="w-full rounded-lg ml-1 p-3 pr-8 border-gray-200 text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            placeholder="Add something new..."
           />
           {newComponent && (
             <button

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useUserInfo } from "@/data/useUserInfo";
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
+import { Sprout } from "lucide-react";
 
 function WelcomePage() {
   const [_, setLocation] = useLocation();
@@ -15,15 +16,16 @@ function WelcomePage() {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 p-4">
-      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-6">
-          Welcome to Mindful Bites
+      <div className="bg-white rounded-xl shadow-lg p-8 sm:max-w-xl w-full text-center">
+        <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-6 flex items-center justify-center gap-2">
+          <Sprout className="text-green-600" size={32} /> Welcome to Mindful
+          Bites
         </h1>
 
         <p className="text-gray-600 text-lg mb-8">
-          Join thousands of users who are already experiencing the benefits of
-          our service. Get started today and discover all the amazing features
-          we have to offer.
+          Track your eating habits in a mindful, non-judgmental way. Define what
+          healthy means for you and gain insights into your personal nutrition
+          journey over time.
         </p>
 
         <Button

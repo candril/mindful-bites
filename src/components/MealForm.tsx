@@ -9,7 +9,6 @@ import {
 import { OptionPicker } from "./OptionPicker";
 import { ComponentPicker } from "./ComponentPicker";
 import { Button } from "./ui/button";
-import { SliderPicker } from "./SliderPicker";
 
 export const MealForm: React.FC<{
   date: Date;
@@ -85,10 +84,12 @@ export const MealForm: React.FC<{
           How healthy was it?
         </label>
 
-        <SliderPicker
+        <OptionPicker
           options={HEALTH_RATING_OPTIONS}
-          onChange={setHealthRating}
           value={healthRating}
+          onChange={setHealthRating}
+          columns={5}
+          variant="color"
         />
       </div>
 

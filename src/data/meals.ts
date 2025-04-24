@@ -23,11 +23,11 @@ export const HEALTH_RATING_OPTIONS: {
   label: string;
   color: string;
 }[] = [
-  { value: "very-unhealthy", label: "Very Unhealthy", color: "bg-red-500" },
-  { value: "unhealthy", label: "Unhealthy", color: "bg-orange-500" },
-  { value: "neutral", label: "Neutral", color: "bg-yellow-500" },
-  { value: "healthy", label: "Healthy", color: "bg-green-500" },
-  { value: "very-healthy", label: "Very Healthy", color: "bg-emerald-500" },
+  { value: "very-unhealthy", label: "1", color: "bg-red-500" },
+  { value: "unhealthy", label: "2", color: "bg-orange-500" },
+  { value: "neutral", label: "3", color: "bg-yellow-500" },
+  { value: "healthy", label: "4", color: "bg-green-500" },
+  { value: "very-healthy", label: "5", color: "bg-emerald-500" },
 ];
 
 export const PORTION_SIZE_OPTIONS: { value: PortionSize; label: string }[] = [

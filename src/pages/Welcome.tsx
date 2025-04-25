@@ -8,7 +8,7 @@ function WelcomePage() {
   const [_, setLocation] = useLocation();
   const { user, storeUserToken } = useUserInfo();
 
-  const { createUser, isLoading } = useCreateUser();
+  const { createUser, isLoading, error } = useCreateUser();
 
   if (user?.token) {
     return <Redirect to={`/${user.token}/calendar`} />;
@@ -41,6 +41,10 @@ function WelcomePage() {
         >
           {isLoading ? "Creating User..." : "Get Started Now"}
         </Button>
+
+        <div className="m-3 text-red-700">
+          {error && "That did not work. Please try again."}
+        </div>
       </div>
     </div>
   );

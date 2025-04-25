@@ -1,9 +1,8 @@
 import React from "react";
-import { MEAL_TYPE_OPTIONS, MealEntry, MealType } from "../data/meals";
-import { getMealScore } from "../data/getMealScore";
-import { Dot } from "./Dot";
-import { Trash2, Plus } from "lucide-react";
+import { MealEntry } from "../data/meals";
+import { Plus } from "lucide-react";
 import { Button } from "./ui/button";
+import { MealTile } from "./MealTile";
 
 export const MealPicker: React.FC<{
   meals: MealEntry[];
@@ -14,36 +13,14 @@ export const MealPicker: React.FC<{
   return (
     <div className="flex flex-col">
       <div className="flex flex-col space-y-4">
-        {meals.map((m) => {
-          const typeName = getMealTypeName(m.mealType);
-          const summary = getComponentSummary(m);
-          const rating = getMealScore(m);
-          return (
-            <div
-              key={m.id}
-              className="flex items-center justify-between p-4 bg-card text-card-foreground border border-input rounded-lg shadow-sm hover:shadow transition-shadow cursor-pointer"
-              onClick={() => onEntryClick(m)}
-            >
-              <div className="flex flex-col">
-                <div className="flex items-center">
-                  <span className="font-semibold mr-2">{typeName}</span>
-                  <Dot rating={rating} />
-                </div>
-                <span className="text-sm text-muted-foreground">{summary}</span>
-              </div>
-              <Button
-                variant="destructive"
-                size="icon"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemoveClick(m);
-                }}
-              >
-                <Trash2 size={18} />
-              </Button>
-            </div>
-          );
-        })}
+        {meals.map((m) => (
+          <MealTile
+            key={m.id}
+            meal={m}
+            onDeleteClick={() => onRemoveClick(m)}
+            onClick={() => onEntryClick(m)}
+          />
+        ))}
       </div>
       <Button
         variant="default"
@@ -57,11 +34,3 @@ export const MealPicker: React.FC<{
     </div>
   );
 };
-
-function getMealTypeName(type: MealType): string | undefined {
-  return MEAL_TYPE_OPTIONS.find((t) => t.value === type)?.label ?? "n/a";
-}
-
-function getComponentSummary(entry: MealEntry) {
-  return entry.components.slice(0, 3).join(", ");
-}

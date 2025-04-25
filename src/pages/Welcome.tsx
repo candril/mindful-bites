@@ -6,7 +6,7 @@ import { Sprout } from "lucide-react";
 
 function WelcomePage() {
   const [_, setLocation] = useLocation();
-  const { user, setUserToken } = useUserInfo();
+  const { user, storeUserToken } = useUserInfo();
 
   const { createUser, isLoading } = useCreateUser();
 
@@ -34,7 +34,7 @@ function WelcomePage() {
           className="w-full text-lg py-6"
           onClick={async () => {
             const token = await createUser();
-            setUserToken(token);
+            storeUserToken(token);
             setLocation(`/${token}/calendar`);
           }}
           disabled={isLoading}

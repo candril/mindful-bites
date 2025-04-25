@@ -1,19 +1,19 @@
-function setUserToken(token: string) {
+function storeUserToken(token: string) {
   localStorage.setItem("user-info", JSON.stringify({ token }));
 }
 
 export function useUserInfo(): {
   user: { token: string } | null;
-  setUserToken: (token: string) => void;
+  storeUserToken: (token: string) => void;
 } {
   const fromStorage = localStorage.getItem("user-info");
 
   if (fromStorage === null) {
-    return { user: null, setUserToken };
+    return { user: null, storeUserToken };
   }
 
   return {
     user: JSON.parse(fromStorage),
-    setUserToken,
+    storeUserToken,
   };
 }

@@ -22,13 +22,13 @@ import { useUserInfo } from "@/data/useUserInfo";
 
 function CalendarPage() {
   const { token } = useParams();
-  const { setUserToken, user } = useUserInfo();
+  const { storeUserToken, user } = useUserInfo();
 
   useEffect(() => {
     if (token && token !== user?.token) {
-      setUserToken(token);
+      storeUserToken(token);
     }
-  }, [setUserToken, token, user, user?.token]);
+  }, [storeUserToken, token, user, user?.token]);
 
   if (!token) {
     return <div>Missing Token</div>;

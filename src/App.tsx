@@ -3,6 +3,7 @@ import { Route, Switch } from "wouter";
 import WelcomePage from "./pages/Welcome";
 import AgendaPage from "./pages/AgendaPage";
 import { AuthenticatedRoute } from "./WithUser";
+import MealStatsPage from "./pages/MealStatsPage";
 
 function App() {
   return (
@@ -16,6 +17,9 @@ function App() {
 
             <Route path="/agenda">
               <AgendaPage />
+            </Route>
+            <Route path="/stats">
+              <MealStatsPage />
             </Route>
           </Switch>
         </AuthenticatedRoute>

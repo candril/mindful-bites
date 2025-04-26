@@ -26,6 +26,12 @@ export const Header: FC = () => {
         >
           Agenda
         </Link>
+        <Link
+          href={`/stats`}
+          className="px-3 py-2 text-sm font-medium rounded-md hover:bg-gray-100 transition-colors"
+        >
+          Stats
+        </Link>
       </div>
     </header>
   );

@@ -36,16 +36,16 @@ const AgendaPage: FC = () => {
 
           return (
             <div key={`${year}-${month}`} className="mb-6">
-              <h2 className="text-2xl font-bold py-2 sticky top-0 bg-white">
+              <h2 className="text-2xl font-bold py-2 px-4 sticky top-16 bg-white/90 text-gray-700 border-b border-gray-200 backdrop-blur-sm mb-3">
                 {monthName}
               </h2>
 
               {sortedDays.map((day) => (
-                <div key={day} className="mb-4">
-                  <h3 className="text-xl font-semibold py-1 top-10 bg-white">
-                    {format(new Date(day), "EEEE, dd")}
+                <div key={day} className="mb-4 m-3">
+                  <h3 className="text-sm font-medium mb-2">
+                    {format(new Date(day), "EEEE, dd.MM.")}
                   </h3>
-                  <div>
+                  <div className="space-y-3">
                     {daysInMonth[day]
                       .sort(
                         (a, b) =>

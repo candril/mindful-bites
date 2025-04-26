@@ -40,7 +40,7 @@ export function useMealForm(inputDate: Date, entry?: MealEntry) {
   const getFormData = (): MealEntry => {
     const updatedEntry: MealEntry = {
       ...(entry ?? { id: crypto.randomUUID() }),
-      date,
+      date: date.toISOString(),
       components,
       healthRating,
       portionSize,

@@ -68,7 +68,7 @@ const CalendarPageInternal: FC<{ token: string }> = ({ token }) => {
         <MealForm
           entry={selectedMealEnty}
           commonComponents={commonComponents}
-          date={selectedMealEnty.date}
+          date={new Date(selectedMealEnty.date)}
           onSubmit={(entry) => {
             updateEntry(entry);
             reset();

@@ -10,7 +10,7 @@ export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
 
 export type MealEntry = {
   id: string;
-  date: Date;
+  date: string;
   components: string[];
   healthRating: HealthRating;
   portionSize: PortionSize;
@@ -36,9 +36,23 @@ export const PORTION_SIZE_OPTIONS: { value: PortionSize; label: string }[] = [
   { value: "large", label: "Zviel" },
 ];
 
-export const MEAL_TYPE_OPTIONS: { value: MealType; label: string }[] = [
-  { value: "breakfast", label: "Zmorge" },
-  { value: "lunch", label: "Zmittag" },
-  { value: "dinner", label: "Znacht" },
-  { value: "snack", label: "Snack" },
+export const MEAL_TYPE_OPTIONS: {
+  value: MealType;
+  label: string;
+  order: number;
+}[] = [
+  { value: "breakfast", label: "Zmorge", order: 1 },
+  { value: "lunch", label: "Zmittag", order: 2 },
+  { value: "dinner", label: "Znacht", order: 3 },
+  { value: "snack", label: "Snack", order: 4 },
 ];
+
+export const MEAL_TYPE_MAP: Record<
+  MealType,
+  (typeof MEAL_TYPE_OPTIONS)[number]
+> = MEAL_TYPE_OPTIONS.reduce(
+  (map, option) => {
+    return { ...map, [option.value]: option };
+  },
+  {} as Record<MealType, (typeof MEAL_TYPE_OPTIONS)[number]>,
+);

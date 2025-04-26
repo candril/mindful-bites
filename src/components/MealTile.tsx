@@ -15,7 +15,7 @@ function getComponentSummary(entry: MealEntry) {
 
 export const MealTile: FunctionComponent<{
   meal: MealEntry;
-  onClick: () => void;
+  onClick?: () => void;
   onDeleteClick?: () => void;
 }> = ({ meal, onClick, onDeleteClick }) => {
   const typeName = getMealTypeName(meal.mealType);
@@ -29,10 +29,10 @@ export const MealTile: FunctionComponent<{
     >
       <div className="flex flex-col">
         <div className="flex items-center">
-          <span className="font-semibold mr-2">{typeName}</span>
+          <span className="font-semibold mr-2">{summary}</span>
           <Dot rating={rating} />
         </div>
-        <span className="text-sm text-muted-foreground">{summary}</span>
+        <span className="text-sm text-muted-foreground">{typeName}</span>
       </div>
 
       {onDeleteClick && (

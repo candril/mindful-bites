@@ -1,16 +1,7 @@
 // Service Worker for Mindful Bites PWA
 
 const CACHE_NAME = "mindful-bites-cache-v1";
-const urlsToCache = [
-  "/manifest.json",
-  "/fav.svg",
-  "/apple-touch-icon.png",
-  "/apple-touch-icon-180x180.png",
-  "/pwa-64x64.png",
-  "/pwa-192x192.png",
-  "/pwa-512x512.png",
-  "/maskable-icon-512x512.png",
-];
+const urlsToCache = ["/", "/index.html", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -33,9 +24,28 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => response || fetch(event.request)),
-  );
+  if (event.request.url.match(/\.(js|css|png|svg)$/)) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        return fetch(event.request).then((networkResponse) => {
+          let responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+
+          return networkResponse;
+        });
+      }),
+    );
+  } else {
+    event.respondWith(
+      caches
+        .match(event.request)
+        .then((response) => response || fetch(event.request)),
+    );
+  }
 });

@@ -5,12 +5,14 @@ import { addMonths } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface CalendarProps {
+  className?: string;
   startMonth: Date;
   onDayClick: (day: Day) => void;
   additionalContent?: (day: Day) => ReactNode;
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
+  className,
   startMonth,
   additionalContent,
   onDayClick,
@@ -20,17 +22,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     useMonthList(startMonth, ref);
 
   return (
-    <div
-      className={cn(
-        "bg-gray-50",
-        "rounded-2xl",
-        "sm:rounded-3xl",
-        "shadow-xl",
-        "overflow-hidden",
-        "border",
-        "border-gray-1",
-      )}
-    >
+    <div className={cn("flex flex-col", className)}>
       <CalendarHeader
         currentMonth={currentMonth}
         onPrevMonth={goBack}
@@ -39,7 +31,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       <div
         ref={ref}
-        className="flex snap-x snap-mandatory overflow-x-auto"
+        className="flex flex-1 snap-x snap-mandatory overflow-x-auto"
         onScroll={handleScroll}
       >
         {months.map((m) => (

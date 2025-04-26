@@ -1,6 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useParams } from "wouter";
 import { useUserInfo } from "./data/useUserInfo";
+import { AuthenticationContext } from "./components/AuthenticationContext";
 
 export function AuthenticatedRoute({ children }: { children: ReactNode }) {
   return <AuthCheck>{children}</AuthCheck>;
@@ -20,5 +21,9 @@ function AuthCheck({ children }: { children: ReactNode }) {
     return <div className="text-red-700">Missing Token</div>;
   }
 
-  return <>{children}</>;
+  return (
+    <AuthenticationContext.Provider value={{ token }}>
+      {children}
+    </AuthenticationContext.Provider>
+  );
 }

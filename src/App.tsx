@@ -10,11 +10,11 @@ function App() {
       <Route path="/:token" nest>
         <AuthenticatedRoute>
           <Switch>
-            <Route path="/calendar" nest>
+            <Route path="/calendar">
               <CalendarPage />
             </Route>
 
-            <Route path="/agenda" nest>
+            <Route path="/agenda">
               <AgendaPage />
             </Route>
           </Switch>

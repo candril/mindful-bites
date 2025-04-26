@@ -17,32 +17,18 @@ import {
 } from "../components/ui/drawer";
 import { Button } from "../components/ui/button";
 import { X } from "lucide-react";
-import { useParams } from "wouter";
-import { useUserInfo } from "@/data/useUserInfo";
+import { Header } from "@/components/Header";
+import { useToken } from "@/components/AuthenticationContext";
+import { Layout } from "@/components/Layout";
 
-function CalendarPage() {
-  const { token } = useParams();
-  const { storeUserToken, user } = useUserInfo();
-
-  useEffect(() => {
-    if (token && token !== user?.token) {
-      storeUserToken(token);
-    }
-  }, [storeUserToken, token, user, user?.token]);
-
-  if (!token) {
-    return <div>Missing Token</div>;
-  }
-
-  return <CalendarPageInternal token={token} />;
-}
-
-const CalendarPageInternal: FC<{ token: string }> = ({ token }) => {
+const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
   const [selectedMealEnty, setSelectedMealEntry] = useState<MealEntry | null>(
     null,
   );
+
+  const token = useToken();
 
   const handleDayClick = (day: Day) => {
     setSelectedDay(day);
@@ -105,8 +91,9 @@ const CalendarPageInternal: FC<{ token: string }> = ({ token }) => {
   };
 
   return (
-    <div className="flex flex-col min-h-svh">
+    <Layout>
       <Calendar
+        className="flex-1"
         startMonth={new Date()}
         onDayClick={handleDayClick}
         additionalContent={(day) =>
@@ -137,7 +124,7 @@ const CalendarPageInternal: FC<{ token: string }> = ({ token }) => {
           <div className="overflow-auto">{getSheetContent()}</div>
         </DrawerContent>
       </Drawer>
-    </div>
+    </Layout>
   );
 };
 

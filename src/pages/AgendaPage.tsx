@@ -5,25 +5,11 @@ import { useUserInfo } from "@/data/useUserInfo";
 import { MealTile } from "@/components/MealTile";
 import { MEAL_TYPE_MAP, MealEntry } from "@/data/meals";
 import { format } from "date-fns";
+import { Layout } from "@/components/Layout";
+import { useToken } from "@/components/AuthenticationContext";
 
-function AgendaPage() {
-  const { token } = useParams();
-  const { storeUserToken, user } = useUserInfo();
-
-  useEffect(() => {
-    if (token && token !== user?.token) {
-      storeUserToken(token);
-    }
-  }, [storeUserToken, token, user, user?.token]);
-
-  if (!token) {
-    return <div>Missing Token</div>;
-  }
-
-  return <AgendaPageInternal token={token} />;
-}
-
-const AgendaPageInternal: FC<{ token: string }> = ({ token }) => {
+const AgendaPage: FC = () => {
+  const token = useToken();
   const { entries } = useMeals(token);
 
   const entriesByYearMonthDay = groupByYearMonthDay(entries);
@@ -33,7 +19,7 @@ const AgendaPageInternal: FC<{ token: string }> = ({ token }) => {
   );
 
   return (
-    <div className="flex flex-col min-h-svh">
+    <Layout>
       {sortedYears.map((year) => {
         const monthsInYear = entriesByYearMonthDay[year];
         const sortedMonths = Object.keys(monthsInYear).sort(
@@ -76,7 +62,7 @@ const AgendaPageInternal: FC<{ token: string }> = ({ token }) => {
           );
         });
       })}
-    </div>
+    </Layout>
   );
 };
 

@@ -2,8 +2,6 @@
 
 const CACHE_NAME = "mindful-bites-cache-v1";
 const urlsToCache = [
-  "/",
-  "/index.html",
   "/manifest.json",
   "/fav.svg",
   "/apple-touch-icon.png",

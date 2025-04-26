@@ -1,5 +1,5 @@
 import CalendarPage from "./pages/CalendarPage";
-import { Route, Switch } from "wouter";
+import { Redirect, Route, Switch } from "wouter";
 import WelcomePage from "./pages/Welcome";
 import AgendaPage from "./pages/AgendaPage";
 import { AuthenticatedRoute } from "./WithUser";
@@ -18,8 +18,13 @@ function App() {
             <Route path="/agenda">
               <AgendaPage />
             </Route>
+
             <Route path="/stats">
               <MealStatsPage />
+            </Route>
+
+            <Route>
+              <Redirect to="/calendar" />
             </Route>
           </Switch>
         </AuthenticatedRoute>

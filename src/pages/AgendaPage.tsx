@@ -1,7 +1,5 @@
 import { useMeals } from "../data/useStorage";
-import { FC, useEffect } from "react";
-import { useParams } from "wouter";
-import { useUserInfo } from "@/data/useUserInfo";
+import { FC } from "react";
 import { MealTile } from "@/components/MealTile";
 import { MEAL_TYPE_MAP, MealEntry } from "@/data/meals";
 import { format } from "date-fns";

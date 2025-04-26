@@ -5,7 +5,7 @@ import { Redirect, useLocation } from "wouter";
 import { Sprout } from "lucide-react";
 
 function WelcomePage() {
-  const [_, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const { user, storeUserToken } = useUserInfo();
 
   const { createUser, isLoading, error } = useCreateUser();

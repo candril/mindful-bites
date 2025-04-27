@@ -69,18 +69,6 @@ export const MealForm: React.FC<{
 
       <div className="space-y-3">
         <label className="block text-sm font-bold opacity-60">
-          What did you eat?
-        </label>
-        <ComponentPicker
-          components={components}
-          commonComponents={commonComponents}
-          onAdd={addComponent}
-          onRemove={removeComponent}
-        />
-      </div>
-
-      <div className="space-y-3">
-        <label className="block text-sm font-bold opacity-60">
           How healthy was it?
         </label>
 
@@ -90,6 +78,18 @@ export const MealForm: React.FC<{
           onChange={setHealthRating}
           columns={5}
           variant="color"
+        />
+      </div>
+
+      <div className="space-y-3">
+        <label className="block text-sm font-bold opacity-60">
+          What did you eat?
+        </label>
+        <ComponentPicker
+          components={components}
+          commonComponents={commonComponents}
+          onAdd={addComponent}
+          onRemove={removeComponent}
         />
       </div>
 

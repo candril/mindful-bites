@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Header } from "./Header";
-import { BottomNav } from "./ButtonNav";
+import { BottomNav } from "./BottomNav";
 
 export const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (

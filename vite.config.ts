@@ -13,7 +13,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       manifest: {
         name: "Mindfuld Bites",
-        short_name: "mindful-bites",
+        short_name: "Mindful Bites",
         description: "Healthy food choices made simple",
         background_color: "#ffffff",
         theme_color: "#ffffff",

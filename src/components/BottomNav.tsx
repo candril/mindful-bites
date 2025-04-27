@@ -33,7 +33,15 @@ const NavItem: FC<NavItemProps> = ({ href, icon, label }) => {
   const [isActive] = useRoute(href);
 
   return (
-    <Link href={href}>
+    <Link
+      href={href}
+      onClick={(e) => {
+        if (isActive) {
+          e.preventDefault();
+          window.location.reload();
+        }
+      }}
+    >
       <button
         className={cn(
           "flex",

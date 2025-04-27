@@ -3,7 +3,7 @@ import { Sprout } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 
-export const Header: FC = () => {
+export const Header: FC<{ title?: string }> = ({ title }) => {
   return (
     <header
       className={cn(
@@ -43,6 +43,8 @@ export const Header: FC = () => {
             <Sprout size={24} />
           </button>
         </Link>
+
+        <h1 className="ml-1 text-xl font-semibold text-gray-800">{title}</h1>
       </div>
     </header>
   );

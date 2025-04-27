@@ -17,7 +17,7 @@ const AgendaPage: FC = () => {
   );
 
   return (
-    <Layout>
+    <Layout title="Agenda">
       {sortedYears.map((year) => {
         const monthsInYear = entriesByYearMonthDay[year];
         const sortedMonths = Object.keys(monthsInYear).sort(
@@ -34,7 +34,7 @@ const AgendaPage: FC = () => {
 
           return (
             <div key={`${year}-${month}`} className="mb-6">
-              <h2 className="text-2xl font-bold py-2 px-4 sticky top-16 bg-white/90 text-gray-700 border-b border-gray-200 backdrop-blur-sm mb-3">
+              <h2 className="text-lg font-semibold py-2 px-3 sticky top-16 bg-white/90 text-gray-700 border-b border-gray-200 backdrop-blur-sm mb-3">
                 {monthName}
               </h2>
 

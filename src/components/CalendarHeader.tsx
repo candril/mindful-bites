@@ -14,7 +14,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 }) => {
   return (
     <div className="flex items-center justify-between px-4 sm:px-8 py-4 sm:py-6 bg-white border-b border-gray-100">
-      <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+      <h2 className="text-lg sm:text-2xl font-bold text-gray-800">
         {format(currentMonth, "LLLL yyyy")}
       </h2>
 

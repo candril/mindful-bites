@@ -1,6 +1,7 @@
 import { FC, ReactNode } from "react";
-import { Link } from "wouter";
+import { Link, useRoute } from "wouter";
 import { Calendar, ClipboardList, BarChart3 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const BottomNav: FC = () => {
   return (
@@ -29,9 +30,25 @@ type NavItemProps = {
 };
 
 const NavItem: FC<NavItemProps> = ({ href, icon, label }) => {
+  const [isActive] = useRoute(href);
+
   return (
     <Link href={href}>
-      <button className="flex flex-col items-center justify-center w-20 p-2 rounded-md hover:bg-gray-100 transition-colors">
+      <button
+        className={cn(
+          "flex",
+          "flex-col",
+          "items-center",
+          "justify-center",
+          "w-20",
+          "p-2",
+          "rounded-md",
+          "hover:bg-gray-100",
+          "transition-colors",
+
+          isActive && "text-green-600",
+        )}
+      >
         {icon}
         <span className="text-xs mt-1">{label}</span>
       </button>

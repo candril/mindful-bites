@@ -90,7 +90,7 @@ const CalendarPage: FC = () => {
   };
 
   return (
-    <Layout>
+    <Layout title="Calendar">
       <Calendar
         className="flex-1"
         startMonth={new Date()}

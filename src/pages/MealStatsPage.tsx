@@ -38,12 +38,7 @@ const MealStatsPage: FC = () => {
   const maxCount = componentStats.length > 0 ? componentStats[0].count : 0;
 
   return (
-    <Layout>
-      <div className="sticky top-16 z-3">
-        <h1 className="text-2xl font-bold py-2 px-4 bg-white/90 text-gray-700 border-b border-gray-200 backdrop-blur-md mb-3 z-3">
-          Statistics
-        </h1>
-      </div>
+    <Layout title="Statistics">
       <div className="container max-w-3xl mx-auto py-6 px-4">
         <Card>
           <CardHeader>

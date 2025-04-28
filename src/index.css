@@ -1,9 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-family: "Nunito", sans-serif;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -116,5 +118,6 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Nunito", sans-serif;
   }
 }

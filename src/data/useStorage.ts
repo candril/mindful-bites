@@ -1,19 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import useSWR from "swr";
+import { useCallback } from "react";
 import { MealEntry } from "./meals";
-import { parseISO } from "date-fns";
-
-function loadEntries(): MealEntry[] {
-  const fromStorage = localStorage.getItem("meal-entries");
-  if (fromStorage === null) {
-    return [];
-  }
-
-  return JSON.parse(fromStorage);
-}
-
-function storeEntries(entries: MealEntry[]) {
-  localStorage.setItem("meal-entries", JSON.stringify(entries));
-}
 
 async function deleteEntryRemote(id: string, token: string) {
   return fetch(`/api/users/${token}/bites/${id}`, {
@@ -34,55 +21,43 @@ async function createEntryRemote(entry: MealEntry, userToken: string) {
   });
 }
 
+const fetcher = (args: string) => fetch(args).then((res) => res.json());
+
 export function useMeals(token: string) {
-  const [entries, setEntries] = useState<MealEntry[]>(() => loadEntries());
+  const { data, mutate } = useSWR<MealEntry[]>(
+    `/api/users/${token}/bites`,
+    fetcher,
+  );
 
-  useEffect(() => {
-    fetch(`/api/users/${token}/bites`)
-      .then((res) => res.json())
-      .then((data) => {
-        for (const entry of data) {
-          entry.date = parseISO(entry.date);
-        }
-
-        storeEntries(data);
-        return setEntries(data);
-      });
-  }, [token]);
+  const entries = data ?? [];
 
   const createEntry = useCallback(
     async (entry: MealEntry) => {
-      const updatedEntries = [...entries, entry];
-      setEntries(updatedEntries);
-      storeEntries(updatedEntries);
-
       await createEntryRemote(entry, token);
+      await mutate([...entries, entry]);
     },
-    [entries, token],
+    [entries, token, mutate],
   );
 
   const updateEntry = useCallback(
     async (updatedEntry: MealEntry) => {
-      const updatedEntries = entries.map((entry) =>
-        entry.id === updatedEntry.id ? updatedEntry : entry,
-      );
-      setEntries(updatedEntries);
-      storeEntries(updatedEntries);
-
       await updateEntryRemote(updatedEntry, token);
+      await mutate(
+        entries.map((entry) =>
+          entry.id === updatedEntry.id ? updatedEntry : entry,
+        ),
+      );
     },
-    [entries, token],
+    [entries, token, mutate],
   );
 
   const deleteEntry = useCallback(
     async (id: string) => {
-      const updatedEntries = entries.filter((entry) => entry.id !== id);
-      setEntries(updatedEntries);
-      storeEntries(updatedEntries);
+      mutate(entries.filter((entry) => entry.id !== id));
 
       await deleteEntryRemote(id, token);
     },
-    [entries, token],
+    [entries, token, mutate],
   );
 
   return {

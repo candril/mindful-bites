@@ -49,13 +49,9 @@ export const Calendar: React.FC<CalendarProps> = ({
 };
 
 function useMonthList(startMonth: Date, ref: RefObject<HTMLDivElement | null>) {
-  const [monthIndex, setMonthIndex] = useState<number>(9);
+  const [monthIndex, setMonthIndex] = useState<number>(3);
   const [months, setMonths] = useState<Date[]>(() => {
-    const result = [
-      ...getMoreMonths(startMonth, 8, -1),
-      startMonth,
-      ...getMoreMonths(startMonth, 2, 1),
-    ];
+    const result = [...getMoreMonths(startMonth, 2, -1), startMonth];
     return result;
   });
 

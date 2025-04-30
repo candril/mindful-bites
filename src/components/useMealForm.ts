@@ -19,11 +19,27 @@ export function useMealForm(inputDate: Date, entry?: MealEntry) {
   const [newComponent, setNewComponent] = useState("");
 
   const addComponent = (component: string) => {
-    const trimmedComponent = component.trim();
-    if (trimmedComponent && !components.includes(trimmedComponent)) {
-      setComponents([...components, trimmedComponent]);
+    const new_components = component
+      .split(",")
+      .map((c) => c.trim())
+      .filter((c) => c.length);
+
+    if (new_components.length === 0) {
       setNewComponent("");
+      return;
     }
+
+    const existingComponents = new Set(components);
+    const merged_components = [...components];
+    for (const c of new_components) {
+      if (!existingComponents.has(c)) {
+        merged_components.push(c);
+        existingComponents.add(c);
+      }
+    }
+
+    setComponents(merged_components);
+    setNewComponent("");
   };
 
   const removeComponent = (component: string) => {

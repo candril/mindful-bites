@@ -8,6 +8,7 @@ import { MealForm } from "./MealForm";
 import { useToken } from "./AuthenticationContext";
 import { useMeals } from "@/data/useStorage";
 import { getCommonComponents } from "@/data/getCommonComponents";
+import { toast } from "sonner";
 
 export const Layout: FC<{ children: ReactNode; title?: string }> = ({
   children,
@@ -44,9 +45,15 @@ export const Layout: FC<{ children: ReactNode; title?: string }> = ({
             <MealForm
               date={new Date()}
               commonComponents={commonComponents}
-              onSubmit={(entry) => {
-                createEntry(entry);
-                setIsOpen(false);
+              onSubmit={async (entry) => {
+                try {
+                  await createEntry(entry);
+                  setIsOpen(false);
+                  return true;
+                } catch {
+                  toast.error("Ooops, the meal could not be stored");
+                  return false;
+                }
               }}
             />
           </div>

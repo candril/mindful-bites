@@ -14,7 +14,7 @@ export const MealForm: React.FC<{
   date: Date;
   entry?: MealEntry;
   commonComponents: string[];
-  onSubmit: (data: MealEntry) => void;
+  onSubmit: (data: MealEntry) => Promise<boolean>;
 }> = ({ onSubmit, date: inputDate, entry, commonComponents }) => {
   const {
     components,
@@ -30,10 +30,11 @@ export const MealForm: React.FC<{
     resetForm,
   } = useMealForm(inputDate, entry);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(getFormData());
-    resetForm();
+    if (await onSubmit(getFormData())) {
+      resetForm();
+    }
   };
 
   return (

@@ -3,22 +3,40 @@ import { MealEntry } from "./meals";
 import { useData } from "./useData";
 
 async function deleteEntryRemote(id: string, token: string) {
-  return fetch(`/api/users/${token}/bites/${id}`, {
+  const res = await fetch(`/api/users/${token}/bites/${id}`, {
     method: "DELETE",
   });
+
+  if (res.ok) {
+    return res;
+  }
+
+  throw new Error(res.statusText);
 }
 async function updateEntryRemote(entry: MealEntry, user_token: string) {
-  return fetch(`/api/users/${user_token}/bites/${entry.id}`, {
+  const res = await fetch(`/api/users/${user_token}/bites/${entry.id}`, {
     method: "PUT",
     body: JSON.stringify({ ...entry, user_token }),
   });
+
+  if (res.ok) {
+    return res;
+  }
+
+  throw new Error(res.statusText);
 }
 
 async function createEntryRemote(entry: MealEntry, userToken: string) {
-  return fetch(`/api/users/${userToken}/bites`, {
+  const res = await fetch(`/api/users/${userToken}/bites`, {
     method: "POST",
     body: JSON.stringify({ ...entry, userToken }),
   });
+
+  if (res.ok) {
+    return res;
+  }
+
+  throw new Error(res.statusText);
 }
 
 export function useMeals(token: string) {
@@ -29,7 +47,12 @@ export function useMeals(token: string) {
   const createEntry = useCallback(
     async (entry: MealEntry) => {
       mutate([...entries, entry]);
-      await createEntryRemote(entry, token);
+      try {
+        await createEntryRemote(entry, token);
+      } catch (error) {
+        mutate([...entries]);
+        throw error;
+      }
     },
     [entries, token, mutate],
   );
@@ -41,7 +64,12 @@ export function useMeals(token: string) {
           entry.id === updatedEntry.id ? updatedEntry : entry,
         ),
       );
-      await updateEntryRemote(updatedEntry, token);
+      try {
+        await updateEntryRemote(updatedEntry, token);
+      } catch (error) {
+        mutate(entries);
+        throw error;
+      }
     },
     [entries, token, mutate],
   );
@@ -49,7 +77,12 @@ export function useMeals(token: string) {
   const deleteEntry = useCallback(
     async (id: string) => {
       mutate(entries.filter((entry) => entry.id !== id));
-      await deleteEntryRemote(id, token);
+      try {
+        await deleteEntryRemote(id, token);
+      } catch (error) {
+        mutate(entries);
+        throw error;
+      }
     },
     [entries, token, mutate],
   );

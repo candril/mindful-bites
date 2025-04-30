@@ -19,6 +19,7 @@ import { Button } from "../components/ui/button";
 import { X } from "lucide-react";
 import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
+import { toast } from "sonner";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
@@ -54,9 +55,16 @@ const CalendarPage: FC = () => {
           entry={selectedMealEnty}
           commonComponents={commonComponents}
           date={new Date(selectedMealEnty.date)}
-          onSubmit={(entry) => {
-            updateEntry(entry);
-            reset();
+          onSubmit={async (entry) => {
+            try {
+              await updateEntry(entry);
+              reset();
+              return true;
+            } catch (error) {
+              console.error("##", error);
+              toast.error("Oops, meal could not be stored!");
+              return false;
+            }
           }}
         />
       );
@@ -68,7 +76,13 @@ const CalendarPage: FC = () => {
           meals={dayEntries}
           onAddClick={() => setShowEntryPicker(false)}
           onEntryClick={(entry) => setSelectedMealEntry(entry)}
-          onRemoveClick={(entry) => deleteEntry(entry.id)}
+          onRemoveClick={async (entry) => {
+            try {
+              await deleteEntry(entry.id);
+            } catch {
+              toast.error("Ooops, could not delete the meal");
+            }
+          }}
         />
       );
     }
@@ -78,9 +92,16 @@ const CalendarPage: FC = () => {
         <MealForm
           date={selectedDay.date}
           commonComponents={commonComponents}
-          onSubmit={(entry) => {
-            createEntry(entry);
-            reset();
+          onSubmit={async (entry) => {
+            try {
+              await createEntry(entry);
+              reset();
+              return true;
+            } catch (error) {
+              console.error("##", error);
+              toast.error("Oops, meal could not be stored!");
+              return false;
+            }
           }}
         />
       );

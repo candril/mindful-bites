@@ -5,42 +5,47 @@ import AgendaPage from "./pages/AgendaPage";
 import { AuthenticatedRoute } from "./WithUser";
 import MealStatsPage from "./pages/MealStatsPage";
 import AboutPage from "./pages/AboutPage";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
-    <Switch>
-      <Route path="/:token" nest>
-        <AuthenticatedRoute>
-          <Switch>
-            <Route path="/calendar">
-              <CalendarPage />
-            </Route>
+    <>
+      <Switch>
+        <Route path="/:token" nest>
+          <AuthenticatedRoute>
+            <Switch>
+              <Route path="/calendar">
+                <CalendarPage />
+              </Route>
 
-            <Route path="/agenda">
-              <AgendaPage />
-            </Route>
+              <Route path="/agenda">
+                <AgendaPage />
+              </Route>
 
-            <Route path="/stats">
-              <MealStatsPage />
-            </Route>
+              <Route path="/stats">
+                <MealStatsPage />
+              </Route>
 
-            <Route path="/about">
-              <AboutPage />
-            </Route>
+              <Route path="/about">
+                <AboutPage />
+              </Route>
 
-            <Route>
-              <Redirect to="/calendar" />
-            </Route>
-          </Switch>
-        </AuthenticatedRoute>
-      </Route>
+              <Route>
+                <Redirect to="/calendar" />
+              </Route>
+            </Switch>
+          </AuthenticatedRoute>
+        </Route>
 
-      <Route path="/">
-        <WelcomePage />
-      </Route>
+        <Route path="/">
+          <WelcomePage />
+        </Route>
 
-      <Route>NOT FOUND</Route>
-    </Switch>
+        <Route>NOT FOUND</Route>
+      </Switch>
+
+      <Toaster richColors position="bottom-center" />
+    </>
   );
 }
 

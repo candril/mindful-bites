@@ -1,14 +1,29 @@
 import { useMeals } from "../data/useStorage";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { MealTile } from "@/components/MealTile";
 import { MEAL_TYPE_MAP, MealEntry } from "@/data/meals";
 import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
 import { useToken } from "@/components/AuthenticationContext";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { MealForm } from "@/components/MealForm";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { toast } from "sonner";
+import { getCommonComponents } from "@/data/getCommonComponents";
 
 const AgendaPage: FC = () => {
   const token = useToken();
-  const { entries } = useMeals(token);
+  const { entries, updateEntry } = useMeals(token);
+
+  const commonComponents = getCommonComponents(entries);
+
+  const [selectedMeal, setSelectedMeal] = useState<MealEntry | null>(null);
 
   const entriesByYearMonthDay = groupByYearMonthDay(entries);
 
@@ -56,7 +71,11 @@ const AgendaPage: FC = () => {
                           MEAL_TYPE_MAP[b.mealType].order,
                       )
                       .map((meal) => (
-                        <MealTile key={meal.id} meal={meal} />
+                        <MealTile
+                          key={meal.id}
+                          meal={meal}
+                          onClick={() => setSelectedMeal(meal)}
+                        />
                       ))}
                   </div>
                 </div>
@@ -65,6 +84,46 @@ const AgendaPage: FC = () => {
           );
         });
       })}
+
+      <Drawer
+        open={selectedMeal != null}
+        onOpenChange={(open) => !open && setSelectedMeal(null)}
+      >
+        <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
+          <DrawerHeader className="flex flex-row p-0">
+            <DrawerTitle className="flex-1 self-center justify-center text-3xl">
+              Update Meal Entry
+            </DrawerTitle>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => setSelectedMeal(null)}
+              className="shadow-none border-none"
+            >
+              <X className="size-4" />
+            </Button>
+          </DrawerHeader>
+          <div className="overflow-auto">
+            {selectedMeal && (
+              <MealForm
+                date={new Date(selectedMeal.date)}
+                entry={selectedMeal}
+                commonComponents={commonComponents}
+                onSubmit={async (entry) => {
+                  try {
+                    await updateEntry(entry);
+                    setSelectedMeal(null);
+                    return true;
+                  } catch {
+                    toast.error("Ooops, the meal could not be stored");
+                    return false;
+                  }
+                }}
+              />
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </Layout>
   );
 };

@@ -5,10 +5,8 @@ import AgendaPage from "./pages/AgendaPage";
 import { AuthenticatedRoute } from "./WithUser";
 import MealStatsPage from "./pages/MealStatsPage";
 import AboutPage from "./pages/AboutPage";
-import { useSWRCache } from "./lib/useSWRCache";
 
 function App() {
-  useSWRCache();
   return (
     <Switch>
       <Route path="/:token" nest>

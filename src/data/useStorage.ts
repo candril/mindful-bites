@@ -1,6 +1,6 @@
-import useSWR from "swr";
 import { useCallback } from "react";
 import { MealEntry } from "./meals";
+import { useData } from "./useData";
 
 async function deleteEntryRemote(id: string, token: string) {
   return fetch(`/api/users/${token}/bites/${id}`, {
@@ -21,32 +21,27 @@ async function createEntryRemote(entry: MealEntry, userToken: string) {
   });
 }
 
-const fetcher = (args: string) => fetch(args).then((res) => res.json());
-
 export function useMeals(token: string) {
-  const { data, mutate } = useSWR<MealEntry[]>(
-    `/api/users/${token}/bites`,
-    fetcher,
-  );
+  const { data, mutate } = useData<MealEntry[]>(`/api/users/${token}/bites`);
 
   const entries = data ?? [];
 
   const createEntry = useCallback(
     async (entry: MealEntry) => {
+      mutate([...entries, entry]);
       await createEntryRemote(entry, token);
-      await mutate([...entries, entry]);
     },
     [entries, token, mutate],
   );
 
   const updateEntry = useCallback(
     async (updatedEntry: MealEntry) => {
-      await updateEntryRemote(updatedEntry, token);
-      await mutate(
+      mutate(
         entries.map((entry) =>
           entry.id === updatedEntry.id ? updatedEntry : entry,
         ),
       );
+      await updateEntryRemote(updatedEntry, token);
     },
     [entries, token, mutate],
   );
@@ -54,7 +49,6 @@ export function useMeals(token: string) {
   const deleteEntry = useCallback(
     async (id: string) => {
       mutate(entries.filter((entry) => entry.id !== id));
-
       await deleteEntryRemote(id, token);
     },
     [entries, token, mutate],

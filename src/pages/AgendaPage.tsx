@@ -27,10 +27,12 @@ const AgendaPage: FC = () => {
         return sortedMonths.map((month) => {
           const daysInMonth = monthsInYear[month];
           const sortedDays = Object.keys(daysInMonth).sort(
-            (a, b) => new Date(b).getTime() - new Date(a).getTime(),
+            (a, b) => Number(b) - Number(a),
           );
-
-          const monthName = format(new Date(sortedDays[0]), "MMMM yyyy");
+          const monthName = format(
+            new Date(Number(year), Number(month), 1),
+            "MMMM yyyy",
+          );
 
           return (
             <div key={`${year}-${month}`} className="mb-6">
@@ -41,7 +43,10 @@ const AgendaPage: FC = () => {
               {sortedDays.map((day) => (
                 <div key={day} className="mb-4 m-3">
                   <h3 className="text-sm font-medium mb-2">
-                    {format(new Date(day), "EEEE, dd.MM.")}
+                    {format(
+                      new Date(Number(year), Number(month), Number(day)),
+                      "EEEE, dd.MM.",
+                    )}
                   </h3>
                   <div className="space-y-3">
                     {daysInMonth[day]
@@ -73,7 +78,7 @@ function groupByYearMonthDay(entries: MealEntry[]) {
     const date = new Date(meal.date);
     const year = date.getFullYear().toString();
     const month = date.getMonth().toString();
-    const day = meal.date;
+    const day = date.getDate();
 
     if (!years[year]) years[year] = {};
     if (!years[year][month]) years[year][month] = {};

@@ -57,8 +57,8 @@ const CalendarPage: FC = () => {
           date={new Date(selectedMealEnty.date)}
           onSubmit={async (entry) => {
             try {
-              await updateEntry(entry);
               reset();
+              await updateEntry(entry);
               return true;
             } catch (error) {
               console.error("##", error);
@@ -94,8 +94,8 @@ const CalendarPage: FC = () => {
           commonComponents={commonComponents}
           onSubmit={async (entry) => {
             try {
-              await createEntry(entry);
               reset();
+              await createEntry(entry);
               return true;
             } catch (error) {
               console.error("##", error);

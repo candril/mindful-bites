@@ -111,8 +111,8 @@ const AgendaPage: FC = () => {
                 commonComponents={commonComponents}
                 onSubmit={async (entry) => {
                   try {
-                    await updateEntry(entry);
                     setSelectedMeal(null);
+                    await updateEntry(entry);
                     return true;
                   } catch {
                     toast.error("Ooops, the meal could not be stored");

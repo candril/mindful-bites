@@ -47,8 +47,8 @@ export const Layout: FC<{ children: ReactNode; title?: string }> = ({
               commonComponents={commonComponents}
               onSubmit={async (entry) => {
                 try {
-                  await createEntry(entry);
                   setIsOpen(false);
+                  await createEntry(entry);
                   return true;
                 } catch {
                   toast.error("Ooops, the meal could not be stored");

@@ -6,10 +6,11 @@ import { AuthenticatedRoute } from "./WithUser";
 import MealStatsPage from "./pages/MealStatsPage";
 import AboutPage from "./pages/AboutPage";
 import { Toaster } from "./components/ui/sonner";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Switch>
         <Route path="/:token" nest>
           <AuthenticatedRoute>
@@ -45,7 +46,7 @@ function App() {
       </Switch>
 
       <Toaster richColors position="bottom-center" />
-    </>
+    </ErrorBoundary>
   );
 }
 

@@ -1,8 +1,7 @@
 import { MealEntry } from "../data/meals";
 
 export function getCommonComponents(allEntries: MealEntry[]): string[] {
-  const allComponents = allEntries?.flatMap((e) => e.components);
-
+  const allComponents = allEntries?.map((e) => e.components).flat(1);
   if (allComponents?.length === 0) {
     return ["Pizza", "Salat"];
   }

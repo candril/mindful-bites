@@ -59,7 +59,7 @@ const MealStatsPage: FC = () => {
   }, [entries]);
 
   const componentStats = useMemo(() => {
-    const allComponents = entries?.flatMap((e) => e.components);
+    const allComponents = entries?.map((e) => e.components).flat(1);
     const componentCount = new Map<string, number>();
 
     allComponents?.forEach((component) => {

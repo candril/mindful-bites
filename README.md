@@ -10,6 +10,10 @@ Mindful Bites is a modern PWA that helps you develop healthier eating habits thr
 
 Mindful Bites is a modern PWA that helps you develop healthier eating habits through simple meal tracking. Log what you eat, rate nutritional value, track portion sizes, and visualize your eating patterns - all without creating an account.
 
+### About Development
+
+Mindful Bites started as a vibe coding experiment. The initial version was created with bolt.new. Further improvements were done with GitHub Copilot Chat. Some parts were rewritten by hand after the initial AI-generated version was no longer sufficient.
+
 ## Features
 
 - **Quick Meal Logging**: Record what you ate with customizable meal components
@@ -46,54 +50,6 @@ This approach provides:
 - Zero-friction onboarding (no forms, email verification, or passwords)
 - Privacy-first design (no personal data collection)
 - Simplified authentication flow
-
-### Database Structure
-
-Data is stored in Supabase with the following schema:
-
-```sql
-CREATE TABLE meal_entries (
-  id UUID PRIMARY KEY,
-  date TIMESTAMP NOT NULL,
-  meal_type TEXT NOT NULL,
-  health_rating INTEGER NOT NULL,
-  portion_size INTEGER NOT NULL,
-  components TEXT[] NOT NULL,
-  user_token TEXT NOT NULL
-);
-
-CREATE INDEX idx_meal_entries_user_token ON meal_entries(user_token);
-```
-
-### Serverless API Layer
-
-Netlify Functions handle all backend operations:
-
-- **GET** `/api/users/:token/bites`: Retrieves all meal entries for a user
-- **POST** `/api/users/:token/bites`: Creates a new meal entry
-- **PUT** `/api/users/:token/bites/:id`: Updates an existing meal entry
-- **DELETE** `/api/users/:token/bites/:id`: Removes a meal entry
-
-The serverless approach provides:
-
-- Automatic scaling based on demand
-- Low operational overhead
-- Secure environment variable management for database credentials
-
-### Frontend Data Management
-
-The application uses custom React hooks for data management:
-
-```typescript
-// Main data hook for meal entries
-const { entries, createEntry, updateEntry, deleteEntry } = useMeals(userToken);
-```
-
-This hook-based approach:
-
-- Centralizes data fetching logic
-- Provides optimistic UI updates
-- Handles error states gracefully
 
 ### Progressive Web App
 

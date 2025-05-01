@@ -1,54 +1,124 @@
-# React + TypeScript + Vite
+# Mindful Bites - Track Your Meals, Build Healthier Habits
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="center">
+  <img src="public/fav.svg" alt="Mindful Bites Logo" width="120" height="120">
+</p>
 
-Currently, two official plugins are available:
+Mindful Bites is a modern PWA that helps you develop healthier eating habits through simple meal tracking. Log what you eat, rate nutritional value, track portion sizes, and visualize your eating patterns - all without creating an account.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**[Try it now: https://www.mindful-bites.com](https://www.mindful-bites.com)**
 
-## Expanding the ESLint configuration
+Mindful Bites is a modern PWA that helps you develop healthier eating habits through simple meal tracking. Log what you eat, rate nutritional value, track portion sizes, and visualize your eating patterns - all without creating an account.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- **Quick Meal Logging**: Record what you ate with customizable meal components
+- **Health Tracking**: Rate meals on health value and portion size
+- **Visualized Stats**: View eating patterns on calendar and in charts
+- **No Account Required**: Start using immediately with an anonymous token
+- **Cross-Device Access**: Access your data anywhere by saving your token
+- **Data Privacy**: Your data belongs to you with easy export options
+
+## Technical Documentation
+
+### Architecture Overview
+
+Mindful Bites uses a modern stack with a focus on simplicity and performance:
+
+- **Frontend**: React 19, TypeScript, Tailwind CSS, Vite
+- **Backend**: Serverless Netlify Functions
+- **Database**: Supabase (PostgreSQL)
+- **Routing**: Wouter (lightweight alternative to React Router)
+- **UI Components**: Radix UI primitives with custom styling
+
+### Token-Based User System
+
+The application uses a "no-signup" approach for frictionless onboarding:
+
+- Each user receives a unique token on first visit
+- This token serves as both identifier and authentication key
+- Users can share their token across devices to access their data
+- All API requests include the token for authentication
+- Tokens are stored locally in the browser's localStorage
+
+This approach provides:
+
+- Zero-friction onboarding (no forms, email verification, or passwords)
+- Privacy-first design (no personal data collection)
+- Simplified authentication flow
+
+### Database Structure
+
+Data is stored in Supabase with the following schema:
+
+```sql
+CREATE TABLE meal_entries (
+  id UUID PRIMARY KEY,
+  date TIMESTAMP NOT NULL,
+  meal_type TEXT NOT NULL,
+  health_rating INTEGER NOT NULL,
+  portion_size INTEGER NOT NULL,
+  components TEXT[] NOT NULL,
+  user_token TEXT NOT NULL
+);
+
+CREATE INDEX idx_meal_entries_user_token ON meal_entries(user_token);
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Serverless API Layer
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Netlify Functions handle all backend operations:
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- **GET** `/api/users/:token/bites`: Retrieves all meal entries for a user
+- **POST** `/api/users/:token/bites`: Creates a new meal entry
+- **PUT** `/api/users/:token/bites/:id`: Updates an existing meal entry
+- **DELETE** `/api/users/:token/bites/:id`: Removes a meal entry
+
+The serverless approach provides:
+
+- Automatic scaling based on demand
+- Low operational overhead
+- Secure environment variable management for database credentials
+
+### Frontend Data Management
+
+The application uses custom React hooks for data management:
+
+```typescript
+// Main data hook for meal entries
+const { entries, createEntry, updateEntry, deleteEntry } = useMeals(userToken);
 ```
+
+This hook-based approach:
+
+- Centralizes data fetching logic
+- Provides optimistic UI updates
+- Handles error states gracefully
+
+### Progressive Web App
+
+Mindful Bites is built as a PWA with:
+
+- Offline capability
+- Install-to-home-screen functionality
+- Responsive design for mobile and desktop
+
+### Deployment
+
+The application is deployed to Netlify with:
+
+- Automated builds from GitHub
+- Environment variable management
+- Edge function distribution
+
+---
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm run dev`
+
+## License
+
+MIT

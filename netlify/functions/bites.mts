@@ -1,19 +1,26 @@
 import { Config, Context } from "@netlify/functions";
-import { createClient } from "@supabase/supabase-js";
+import { MongoClient, ObjectId } from "mongodb";
 import { MealEntry } from "../../src/data/meals.ts";
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const mongoUri = process.env.MONGODB_URI;
+let _client: MongoClient | null = null;
 
-const _supabase =
-  supabaseUrl && supabaseKey && createClient(supabaseUrl, supabaseKey);
-
-function getClient() {
-  if (_supabase) {
-    return _supabase;
+async function getClient(): Promise<MongoClient> {
+  if (_client) {
+    return _client;
   }
 
-  throw new Error("Missing supabase config");
+  if (!mongoUri) {
+    throw new Error("Missing MongoDB configuration");
+  }
+
+  _client = new MongoClient(mongoUri);
+  return _client;
+}
+
+async function getCollection() {
+  const client = await getClient();
+  return client.db("mindful_bites").collection("entries");
 }
 
 async function updateBite(req: Request, context: Context) {
@@ -33,60 +40,74 @@ async function updateBite(req: Request, context: Context) {
     });
   }
 
-  const supabase = getClient();
+  try {
+    const collection = await getCollection();
 
-  const { error } = await supabase
-    .from("meal_entries")
-    .update({
-      date: new Date(mealEntry.date).toISOString(),
-      components: mealEntry.components,
-      health_rating: mealEntry.healthRating,
-      portion_size: mealEntry.portionSize,
-      meal_type: mealEntry.mealType,
-      user_token: mealEntry.userToken,
-    })
-    .eq("id", id)
-    .eq("user_token", token);
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id), userToken: token },
+      {
+        $set: {
+          date: new Date(mealEntry.date),
+          components: mealEntry.components,
+          healthRating: mealEntry.healthRating,
+          portionSize: mealEntry.portionSize,
+          mealType: mealEntry.mealType,
+          userToken: mealEntry.userToken,
+        },
+      },
+    );
 
-  if (error) {
+    if (result.matchedCount === 0) {
+      return new Response(
+        JSON.stringify({ error: "Entry not found or unauthorized" }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    return new Response(null, {
+      status: 204,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "Failed to update entry" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  return new Response(null, {
-    status: 204,
-    headers: { "Content-Type": "application/json" },
-  });
 }
 
 async function getBites(context: Context) {
-  const supabase = getClient();
-
   const { token } = context.params;
 
-  const { data, error } = await supabase
-    .from("meal_entries")
-    .select("*")
-    .eq("user_token", token);
+  try {
+    const collection = await getCollection();
 
-  if (error) {
-    throw new Error("Failed to load bites");
+    const data = await collection.find({ userToken: token }).toArray();
+
+    const mappedData = data.map((entry) => ({
+      id: entry._id.toString(),
+      date: new Date(entry.date).toISOString(),
+      components: entry.components,
+      healthRating: entry.healthRating,
+      portionSize: entry.portionSize,
+      mealType: entry.mealType,
+      userToken: entry.userToken,
+    }));
+
+    return new Response(JSON.stringify(mappedData), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: "Failed to load bites" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
-
-  const mappedData = data.map((entry: any) => ({
-    id: entry.id,
-    date: new Date(entry.date).toISOString(),
-    components: entry.components,
-    healthRating: entry.health_rating,
-    portionSize: entry.portion_size,
-    mealType: entry.meal_type,
-    userToken: entry.user_token,
-  }));
-
-  return new Response(JSON.stringify(mappedData), { status: 200 });
 }
 
 async function deleteBite(context: Context) {
@@ -95,19 +116,30 @@ async function deleteBite(context: Context) {
   if (!id || !token) {
     return new Response(null, { status: 400 });
   }
-  const supabase = getClient();
-  const { error } = await supabase
-    .from("meal_entries") // Replace 'bites' with your table name
-    .delete()
-    .eq("id", id)
-    .eq("user_token", token);
 
-  if (error) {
+  try {
+    const collection = await getCollection();
+
+    const result = await collection.deleteOne({
+      _id: new ObjectId(id),
+      userToken: token,
+    });
+
+    if (result.deletedCount === 0) {
+      return new Response(
+        JSON.stringify({ error: "Entry not found or unauthorized" }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    return new Response(null, { status: 204 });
+  } catch (error) {
     console.error(error);
     return new Response(null, { status: 500 });
   }
-
-  return new Response(null, { status: 204 });
 }
 
 async function createBite(req: Request) {
@@ -119,56 +151,48 @@ async function createBite(req: Request) {
     });
   }
 
-  const supabase = getClient();
+  try {
+    const collection = await getCollection();
 
-  const { data, error } = await supabase.from("meal_entries").insert([
-    {
-      id: mealEntry.id,
-      date: new Date(mealEntry.date).toISOString(),
+    const result = await collection.insertOne({
+      date: new Date(mealEntry.date),
       components: mealEntry.components,
-      health_rating: mealEntry.healthRating,
-      portion_size: mealEntry.portionSize,
-      meal_type: mealEntry.mealType,
-      user_token: mealEntry.userToken,
-    },
-  ]);
+      healthRating: mealEntry.healthRating,
+      portionSize: mealEntry.portionSize,
+      mealType: mealEntry.mealType,
+      userToken: mealEntry.userToken,
+    });
 
-  if (error) {
+    return new Response(
+      JSON.stringify({
+        success: true,
+        id: result.insertedId.toString(),
+      }),
+      {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: "Failed to create entry" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
-
-  return new Response(JSON.stringify({ success: true, data }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
 }
 
 export default async (req: Request, context: Context) => {
-  // Check if Supabase credentials are available
-  if (!_supabase) {
-    return new Response(
-      JSON.stringify({ error: "Supabase configuration missing" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      },
-    );
-  }
-
   try {
     switch (req.method) {
       case "PUT":
-        updateBite(req, context);
+        return await updateBite(req, context);
       case "GET":
-        return getBites(context);
+        return await getBites(context);
       case "POST":
-        return createBite(req);
+        return await createBite(req);
       case "DELETE":
-        return deleteBite(context);
+        return await deleteBite(context);
       default:
         return new Response("Not found", {
           status: 404,

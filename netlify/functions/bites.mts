@@ -5,6 +5,8 @@ import { MealEntry } from "../../src/data/meals.ts";
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
+const MEAL_ENTRIES_TABLE_NAME = "meal_entries_v2";
+
 const _supabase =
   supabaseUrl && supabaseKey && createClient(supabaseUrl, supabaseKey);
 
@@ -36,14 +38,16 @@ async function updateBite(req: Request, context: Context) {
   const supabase = getClient();
 
   const { error } = await supabase
-    .from("meal_entries")
+    .from(MEAL_ENTRIES_TABLE_NAME)
     .update({
       date: new Date(mealEntry.date).toISOString(),
-      components: mealEntry.components,
-      health_rating: mealEntry.healthRating,
-      portion_size: mealEntry.portionSize,
-      meal_type: mealEntry.mealType,
       user_token: mealEntry.userToken,
+      data: {
+        components: mealEntry.components,
+        health_rating: mealEntry.healthRating,
+        portion_size: mealEntry.portionSize,
+        meal_type: mealEntry.mealType,
+      },
     })
     .eq("id", id)
     .eq("user_token", token);
@@ -68,7 +72,7 @@ async function getBites(context: Context) {
   const { token } = context.params;
 
   const { data, error } = await supabase
-    .from("meal_entries")
+    .from(MEAL_ENTRIES_TABLE_NAME)
     .select("*")
     .eq("user_token", token);
 
@@ -79,11 +83,11 @@ async function getBites(context: Context) {
   const mappedData = data.map((entry: any) => ({
     id: entry.id,
     date: new Date(entry.date).toISOString(),
-    components: entry.components,
-    healthRating: entry.health_rating,
-    portionSize: entry.portion_size,
-    mealType: entry.meal_type,
     userToken: entry.user_token,
+    components: entry.data.components,
+    healthRating: entry.data.health_rating,
+    portionSize: entry.data.portion_size,
+    mealType: entry.data.meal_type,
   }));
 
   return new Response(JSON.stringify(mappedData), { status: 200 });
@@ -97,7 +101,7 @@ async function deleteBite(context: Context) {
   }
   const supabase = getClient();
   const { error } = await supabase
-    .from("meal_entries") // Replace 'bites' with your table name
+    .from(MEAL_ENTRIES_TABLE_NAME) // Replace 'bites' with your table name
     .delete()
     .eq("id", id)
     .eq("user_token", token);
@@ -121,15 +125,17 @@ async function createBite(req: Request) {
 
   const supabase = getClient();
 
-  const { data, error } = await supabase.from("meal_entries").insert([
+  const { data, error } = await supabase.from(MEAL_ENTRIES_TABLE_NAME).insert([
     {
       id: mealEntry.id,
       date: new Date(mealEntry.date).toISOString(),
-      components: mealEntry.components,
-      health_rating: mealEntry.healthRating,
-      portion_size: mealEntry.portionSize,
-      meal_type: mealEntry.mealType,
       user_token: mealEntry.userToken,
+      data: {
+        components: mealEntry.components,
+        health_rating: mealEntry.healthRating,
+        portion_size: mealEntry.portionSize,
+        meal_type: mealEntry.mealType,
+      },
     },
   ]);
 

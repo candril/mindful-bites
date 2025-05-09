@@ -13,10 +13,10 @@ async function deleteEntryRemote(id: string, token: string) {
 
   throw new Error(res.statusText);
 }
-async function updateEntryRemote(entry: MealEntry, user_token: string) {
-  const res = await fetch(`/api/users/${user_token}/bites/${entry.id}`, {
+async function updateEntryRemote(entry: MealEntry, userToken: string) {
+  const res = await fetch(`/api/users/${userToken}/bites/${entry.id}`, {
     method: "PUT",
-    body: JSON.stringify({ ...entry, user_token }),
+    body: JSON.stringify({ ...entry, userToken }),
   });
 
   if (res.ok) {

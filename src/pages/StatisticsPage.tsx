@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useEntries } from "@/data/useStorage";
 
-const MealStatsPage: FC = () => {
+const StatisticsPage: FC = () => {
   const { entries } = useEntries();
 
   const mealStats = useMemo(() => {
@@ -191,7 +191,7 @@ const MealStatsPage: FC = () => {
   );
 };
 
-export default MealStatsPage;
+export default StatisticsPage;
 
 interface StatCardProps {
   title: string;

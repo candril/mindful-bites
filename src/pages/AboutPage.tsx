@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useEntries } from "@/data/useStorage";
 import { ChevronRight, Copy, Download, LogOut, Share } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ import { toast } from "sonner";
 const AboutPage = () => {
   const token = useToken();
   const [copied, setCopied] = useState<"token" | "link" | null>(null);
+  const { entries } = useEntries();
 
   const handleCopyToken = () => {
     navigator.clipboard.writeText(token);
@@ -72,10 +74,10 @@ const AboutPage = () => {
     entries.forEach((entry) => {
       const row = [
         new Date(entry.date).toISOString().split("T")[0],
-        entry.mealType,
-        entry.healthRating,
-        entry.portionSize,
-        `"${entry.components.join(", ")}"`,
+        entry.data.mealType,
+        entry.data.healthRating,
+        entry.data.portionSize,
+        `"${entry.data.components.join(", ")}"`,
       ];
       csvRows.push(row.join(","));
     });

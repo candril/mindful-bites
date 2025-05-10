@@ -34,15 +34,15 @@ const ChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
 
 const ComboChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
   const { entries } = useEntries();
-  const commonComponents = getCommonChoices(definition, entries);
-  const components = value ? (value as string[]) : [];
+  const commonChoices = getCommonChoices(definition, entries);
+  const choices = value ? (value as string[]) : [];
 
   return (
     <ComponentPicker
-      commonComponents={commonComponents}
-      components={components}
+      commonComponents={commonChoices}
+      components={choices}
       onAdd={handleAddComponent}
-      onRemove={(v) => onChange(components.filter((c) => v !== c))}
+      onRemove={(v) => onChange(choices.filter((c) => v !== c))}
     />
   );
 
@@ -56,8 +56,8 @@ const ComboChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
       return;
     }
 
-    const existingComponents = new Set(components);
-    const merged_components = [...components];
+    const existingComponents = new Set(choices);
+    const merged_components = [...choices];
     for (const c of new_components) {
       if (!existingComponents.has(c)) {
         merged_components.push(c);

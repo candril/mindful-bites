@@ -42,12 +42,10 @@ const CalendarPage: FC = () => {
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
 
   const getSheetContent = () => {
-    // const commonComponents = getCommonChoices(entries);
     if (selectedEntry) {
       return (
         <EntryForm
           entry={selectedEntry}
-          // commonComponents={commonComponents}
           onSubmit={async (entry: Entry) => {
             try {
               reset();

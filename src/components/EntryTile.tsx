@@ -1,26 +1,27 @@
 import { getMealScore } from "@/data/getMealScore";
-import { MealType, MEAL_TYPE_OPTIONS, MealEntry } from "@/data/meals";
+import { MealType, MEAL_TYPE_OPTIONS } from "@/data/meals";
 import { Trash2 } from "lucide-react";
 import { FunctionComponent } from "react";
 import { Button } from "./ui/button";
 import { Dot } from "./Dot";
+import { Entry } from "@/data/useStorage";
 
 function getMealTypeName(type: MealType): string | undefined {
   return MEAL_TYPE_OPTIONS.find((t) => t.value === type)?.label ?? "n/a";
 }
 
-function getComponentSummary(entry: MealEntry) {
-  return entry.components.slice(0, 3).join(", ");
+function getComponentSummary(entry: Entry) {
+  return entry.data.components?.slice(0, 3).join(", ") ?? "Just Something";
 }
 
-export const MealTile: FunctionComponent<{
-  meal: MealEntry;
+export const EntryTile: FunctionComponent<{
+  meal: Entry;
   onClick?: () => void;
   onDeleteClick?: () => void;
-}> = ({ meal, onClick, onDeleteClick }) => {
-  const typeName = getMealTypeName(meal.mealType);
-  const summary = getComponentSummary(meal);
-  const rating = getMealScore(meal);
+}> = ({ meal: entry, onClick, onDeleteClick }) => {
+  const typeName = getMealTypeName(entry.data.mealType);
+  const summary = getComponentSummary(entry);
+  const rating = getMealScore(entry);
 
   return (
     <div

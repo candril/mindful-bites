@@ -1,14 +1,11 @@
 import { format, isSameDay } from "date-fns";
 import { Calendar } from "../components/Calendar";
-import { useMeals } from "../data/useStorage";
+import { Entry, useEntries } from "../data/useStorage";
 import { FC, useState } from "react";
 import { getMealScore } from "../data/getMealScore";
 import { Dot } from "../components/Dot";
-import { getCommonComponents } from "../data/getCommonComponents";
-import { MealForm } from "../components/MealForm";
-import { MealPicker } from "../components/MealPicker";
+import { EntryForm } from "../components/MealForm";
 import { Day } from "../components/CalendarGrid";
-import { MealEntry } from "../data/meals";
 import {
   Drawer,
   DrawerContent,
@@ -20,13 +17,13 @@ import { X } from "lucide-react";
 import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
+import { useFieldDefinitions } from "@/components/useFieldDefinitions";
+import { EntryPicker } from "@/components/MealPicker";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
-  const [selectedMealEnty, setSelectedMealEntry] = useState<MealEntry | null>(
-    null,
-  );
+  const [selectedMealEnty, setSelectedMealEntry] = useState<Entry | null>(null);
 
   const token = useToken();
 
@@ -43,25 +40,23 @@ const CalendarPage: FC = () => {
   const getDayEntries = (date: Date) =>
     entries.filter((e) => isSameDay(e.date, date));
 
-  const { entries, updateEntry, deleteEntry, createEntry } = useMeals(token);
+  const { entries, updateEntry, deleteEntry, createEntry } = useEntries(token);
 
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
 
   const getSheetContent = () => {
-    const commonComponents = getCommonComponents(entries);
+    // const commonComponents = getCommonComponents(entries);
     if (selectedMealEnty) {
       return (
-        <MealForm
+        <EntryForm
           entry={selectedMealEnty}
-          commonComponents={commonComponents}
-          date={new Date(selectedMealEnty.date)}
+          // commonComponents={commonComponents}
           onSubmit={async (entry) => {
             try {
               reset();
               await updateEntry(entry);
               return true;
             } catch (error) {
-              console.error("##", error);
               toast.error("Oops, meal could not be stored!");
               return false;
             }
@@ -72,8 +67,8 @@ const CalendarPage: FC = () => {
 
     if (dayEntries.length && showEntryPicker) {
       return (
-        <MealPicker
-          meals={dayEntries}
+        <EntryPicker
+          entries={dayEntries}
           onAddClick={() => setShowEntryPicker(false)}
           onEntryClick={(entry) => setSelectedMealEntry(entry)}
           onRemoveClick={async (entry) => {
@@ -89,16 +84,14 @@ const CalendarPage: FC = () => {
 
     if (selectedDay) {
       return (
-        <MealForm
+        <NewEntryForm
           date={selectedDay.date}
-          commonComponents={commonComponents}
           onSubmit={async (entry) => {
             try {
               reset();
               await createEntry(entry);
               return true;
             } catch (error) {
-              console.error("##", error);
               toast.error("Oops, meal could not be stored!");
               return false;
             }
@@ -145,6 +138,38 @@ const CalendarPage: FC = () => {
         </DrawerContent>
       </Drawer>
     </Layout>
+  );
+};
+
+const NewEntryForm: FC<{
+  date: Date;
+  onSubmit: (data: Entry) => Promise<boolean>;
+}> = ({ date, onSubmit }) => {
+  const token = useToken();
+  const fields = useFieldDefinitions("26386876-5fd6-4a2d-8d03-064ddb3fd909");
+
+  if (!fields || fields.length < 1) {
+    return null;
+  }
+
+  const initialData = fields.reduce<Record<string, unknown>>(
+    (current, next) => ({ ...current, [next.name]: next.defaultValue }),
+    {} as Record<string, unknown>,
+  );
+
+  return (
+    <EntryForm
+      entry={{
+        id: crypto.randomUUID(),
+        data: initialData,
+        date: date.toISOString(),
+        definitionId: "26386876-5fd6-4a2d-8d03-064ddb3fd909",
+        userToken: token,
+      }}
+      date={date}
+      // commonComponents={commonComponents}
+      onSubmit={onSubmit}
+    />
   );
 };
 

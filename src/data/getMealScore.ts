@@ -1,5 +1,5 @@
 import { RatingColor } from "../components/Dot";
-import { MealEntry } from "../data/meals";
+import { Entry } from "./useStorage";
 
 export const ratingColorMap: Record<RatingColor, string> = {
   bad: "bg-red-600",
@@ -17,10 +17,10 @@ const mealColorCoding: RatingColor[] = [
   "excellent",
 ];
 
-export function getMealScore(entry: MealEntry): RatingColor {
+export function getMealScore(entry: Entry): RatingColor {
   let score = 3;
 
-  switch (entry.portionSize) {
+  switch (entry.data.portionSize) {
     case "large":
       score -= 1;
       break;
@@ -29,7 +29,7 @@ export function getMealScore(entry: MealEntry): RatingColor {
       break;
   }
 
-  switch (entry.healthRating) {
+  switch (entry.data.healthRating) {
     case "very-unhealthy":
       score -= 2;
       break;

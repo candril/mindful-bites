@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface Option<T extends string> {
-  value: T;
-  label: string;
+export interface Option {
+  value: string;
+  title: string;
   color?: string;
 }
 
-interface OptionPickerProps<T extends string> {
-  options: Option<T>[];
-  value: T;
-  onChange: (value: T) => void;
+interface OptionPickerProps {
+  options: Option[];
+  value: string;
+  onChange: (value: string) => void;
   columns?: number;
   variant?: "default" | "color" | "dark";
 }
@@ -23,13 +23,13 @@ const columnClasses: { [col: number]: string } = {
   5: "grid-cols-5",
 };
 
-export function OptionPicker<T extends string>({
+export function OptionPicker({
   options,
   value,
   onChange,
   columns = 4,
   variant = "default",
-}: OptionPickerProps<T>) {
+}: OptionPickerProps) {
   return (
     <div className={`grid ${columnClasses[columns] ?? "grid-cols-3"} gap-1.5`}>
       {options.map((option) => (
@@ -54,7 +54,7 @@ export function OptionPicker<T extends string>({
               "bg-blue-50 text-blue-700 border border-blue-200",
           )}
         >
-          {option.label}
+          {option.title}
         </Button>
       ))}
     </div>

@@ -12,14 +12,12 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useMeals } from "@/data/useStorage";
 import { ChevronRight, Copy, Download, LogOut, Share } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 const AboutPage = () => {
   const token = useToken();
-  const { entries } = useMeals(token);
   const [copied, setCopied] = useState<"token" | "link" | null>(null);
 
   const handleCopyToken = () => {

@@ -1,85 +1,29 @@
 import { useState } from "react";
-import { HealthRating, PortionSize, MealEntry, MealType } from "../data/meals";
+import { Entry } from "@/data/useStorage";
 
-export function useMealForm(inputDate: Date, entry?: MealEntry) {
-  const [date, setDate] = useState<Date>(inputDate);
-  const [components, setComponents] = useState<string[]>(
-    entry?.components ?? [],
-  );
-  const [healthRating, setHealthRating] = useState<HealthRating>(
-    entry?.healthRating ?? "neutral",
-  );
-  const [portionSize, setPortionSize] = useState<PortionSize>(
-    entry?.portionSize ?? "just-right",
-  );
-  const [mealType, setMealType] = useState<MealType>(
-    entry?.mealType ?? "lunch",
-  );
+export function useEntryForm(entry: Entry) {
+  const [data, setData] = useState<Record<string, unknown>>(entry.data);
 
-  const [newComponent, setNewComponent] = useState("");
-
-  const addComponent = (component: string) => {
-    const new_components = component
-      .split(",")
-      .map((c) => c.trim())
-      .filter((c) => c.length);
-
-    if (new_components.length === 0) {
-      setNewComponent("");
-      return;
-    }
-
-    const existingComponents = new Set(components);
-    const merged_components = [...components];
-    for (const c of new_components) {
-      if (!existingComponents.has(c)) {
-        merged_components.push(c);
-        existingComponents.add(c);
-      }
-    }
-
-    setComponents(merged_components);
-    setNewComponent("");
-  };
-
-  const removeComponent = (component: string) => {
-    setComponents(components.filter((c) => c !== component));
+  const setDataField = (field: string, value: unknown) => {
+    setData({ ...data, [field]: value });
   };
 
   const resetForm = () => {
-    setComponents([]);
-    setHealthRating("neutral");
-    setPortionSize("just-right");
-    setMealType("lunch");
+    setData({});
   };
 
-  const getFormData = (): MealEntry => {
-    const updatedEntry: MealEntry = {
-      ...(entry ?? { id: crypto.randomUUID() }),
-      date: date.toISOString(),
-      components,
-      healthRating,
-      portionSize,
-      mealType,
+  const getFormData = (): Entry => {
+    const updatedEntry: Entry = {
+      ...entry,
+      data,
     };
 
     return updatedEntry;
   };
 
   return {
-    date,
-    setDate,
-    components,
-    healthRating,
-    setHealthRating,
-    portionSize,
-    setPortionSize,
-    mealType,
-    setMealType,
-    newComponent,
-    setNewComponent,
-    addComponent,
-    removeComponent,
+    data,
+    setDataField,
     getFormData,
     resetForm,
   };

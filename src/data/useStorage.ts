@@ -1,9 +1,16 @@
 import { useCallback } from "react";
-import { MealEntry } from "./meals";
 import { useData } from "./useData";
 
+export type Entry = {
+  id: string;
+  date: string;
+  data: Record<string, unknown>;
+  definitionId: string;
+  userToken: string;
+};
+
 async function deleteEntryRemote(id: string, token: string) {
-  const res = await fetch(`/api/users/${token}/bites/${id}`, {
+  const res = await fetch(`/api/users/${token}/entries/${id}`, {
     method: "DELETE",
   });
 
@@ -13,8 +20,8 @@ async function deleteEntryRemote(id: string, token: string) {
 
   throw new Error(res.statusText);
 }
-async function updateEntryRemote(entry: MealEntry, userToken: string) {
-  const res = await fetch(`/api/users/${userToken}/bites/${entry.id}`, {
+async function updateEntryRemote(entry: Entry, userToken: string) {
+  const res = await fetch(`/api/users/${userToken}/entries/${entry.id}`, {
     method: "PUT",
     body: JSON.stringify({ ...entry, userToken }),
   });
@@ -26,8 +33,8 @@ async function updateEntryRemote(entry: MealEntry, userToken: string) {
   throw new Error(res.statusText);
 }
 
-async function createEntryRemote(entry: MealEntry, userToken: string) {
-  const res = await fetch(`/api/users/${userToken}/bites`, {
+async function createEntryRemote(entry: Entry, userToken: string) {
+  const res = await fetch(`/api/users/${userToken}/entries`, {
     method: "POST",
     body: JSON.stringify({ ...entry, userToken }),
   });
@@ -39,13 +46,13 @@ async function createEntryRemote(entry: MealEntry, userToken: string) {
   throw new Error(res.statusText);
 }
 
-export function useMeals(token: string) {
-  const { data, mutate } = useData<MealEntry[]>(`/api/users/${token}/bites`);
+export function useEntries(token: string) {
+  const { data, mutate } = useData<Entry[]>(`/api/users/${token}/entries`);
 
   const entries = data ?? [];
 
   const createEntry = useCallback(
-    async (entry: MealEntry) => {
+    async (entry: Entry) => {
       mutate([...entries, entry]);
       try {
         await createEntryRemote(entry, token);
@@ -58,7 +65,7 @@ export function useMeals(token: string) {
   );
 
   const updateEntry = useCallback(
-    async (updatedEntry: MealEntry) => {
+    async (updatedEntry: Entry) => {
       mutate(
         entries.map((entry) =>
           entry.id === updatedEntry.id ? updatedEntry : entry,

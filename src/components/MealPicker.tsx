@@ -1,20 +1,20 @@
 import React from "react";
-import { MealEntry } from "../data/meals";
 import { Plus } from "lucide-react";
 import { Button } from "./ui/button";
-import { MealTile } from "./MealTile";
+import { EntryTile } from "./EntryTile";
+import { Entry } from "@/data/useStorage";
 
-export const MealPicker: React.FC<{
-  meals: MealEntry[];
+export const EntryPicker: React.FC<{
+  entries: Entry[];
   onAddClick: () => void;
-  onEntryClick: (entry: MealEntry) => void;
-  onRemoveClick: (entry: MealEntry) => void;
-}> = ({ meals, onAddClick, onEntryClick, onRemoveClick }) => {
+  onEntryClick: (entry: Entry) => void;
+  onRemoveClick: (entry: Entry) => void;
+}> = ({ entries, onAddClick, onEntryClick, onRemoveClick }) => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col space-y-4">
-        {meals.map((m) => (
-          <MealTile
+        {entries.map((m) => (
+          <EntryTile
             key={m.id}
             meal={m}
             onDeleteClick={() => onRemoveClick(m)}

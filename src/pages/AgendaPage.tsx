@@ -1,6 +1,6 @@
-import { useMeals } from "../data/useStorage";
+// import { useMeals } from "../data/useStorage";
 import { FC, useState } from "react";
-import { MealTile } from "@/components/MealTile";
+import { EntryTile } from "@/components/EntryTile";
 import { MEAL_TYPE_MAP, MealEntry } from "@/data/meals";
 import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
@@ -11,7 +11,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { MealForm } from "@/components/MealForm";
+import { EntryForm } from "@/components/MealForm";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ import { getCommonComponents } from "@/data/getCommonComponents";
 
 const AgendaPage: FC = () => {
   const token = useToken();
-  const { entries, updateEntry } = useMeals(token);
+  // const { entries, updateEntry } = useMeals(token);
 
   const commonComponents = getCommonComponents(entries);
 
@@ -71,7 +71,7 @@ const AgendaPage: FC = () => {
                           MEAL_TYPE_MAP[b.mealType].order,
                       )
                       .map((meal) => (
-                        <MealTile
+                        <EntryTile
                           key={meal.id}
                           meal={meal}
                           onClick={() => setSelectedMeal(meal)}
@@ -105,7 +105,7 @@ const AgendaPage: FC = () => {
           </DrawerHeader>
           <div className="overflow-auto">
             {selectedMeal && (
-              <MealForm
+              <EntryForm
                 date={new Date(selectedMeal.date)}
                 entry={selectedMeal}
                 commonComponents={commonComponents}

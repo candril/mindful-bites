@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { EntryTile } from "@/components/EntryTile";
-import { MEAL_TYPE_MAP } from "@/data/meals";
+import { MEAL_TYPE_MAP, MealType } from "@/data/meals";
 import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
 import {
@@ -9,7 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { EntryForm } from "@/components/EntryForm";
+import { EntryForm } from "@/components/form/EntryForm";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -62,8 +62,8 @@ const AgendaPage: FC = () => {
                     {daysInMonth[day]
                       .sort(
                         (a, b) =>
-                          MEAL_TYPE_MAP[a.data.mealType].order -
-                          MEAL_TYPE_MAP[b.data.mealType].order,
+                          MEAL_TYPE_MAP[a.data.mealType as MealType].order -
+                          MEAL_TYPE_MAP[b.data.mealType as MealType].order,
                       )
                       .map((entry) => (
                         <EntryTile
@@ -102,7 +102,7 @@ const AgendaPage: FC = () => {
             {selectedEntry && (
               <EntryForm
                 entry={selectedEntry}
-                onSubmit={async (entry) => {
+                onSubmit={async (entry: Entry) => {
                   try {
                     setSelectedEntry(null);
                     await updateEntry(entry);

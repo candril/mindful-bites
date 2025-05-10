@@ -1,5 +1,5 @@
 import { useData } from "@/data/useData";
-import { useToken } from "./AuthenticationContext";
+import { useToken } from "../AuthenticationContext";
 
 export type ChoiceItem = {
   key: string;

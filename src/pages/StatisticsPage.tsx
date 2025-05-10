@@ -84,9 +84,11 @@ const StatisticsPage: FC = () => {
     const combinationCount = new Map<string, number>();
 
     entries?.forEach((entry) => {
-      if (entry.data.components?.length > 1) {
+      if ((entry.data.components as string[])?.length > 1) {
         // Sort components to ensure consistent keys
-        const combinationKey = [...entry.data.components].sort().join(", ");
+        const combinationKey = [...(entry.data.components as string)]
+          .sort()
+          .join(", ");
         combinationCount.set(
           combinationKey,
           (combinationCount.get(combinationKey) || 0) + 1,

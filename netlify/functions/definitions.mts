@@ -6,7 +6,6 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 const ENTRY_DEFINITIONS_TABLE_NAME = "entry_data_definitions";
-const MEAL_ENTRIES_TABLE_NAME2 = "field_definitions";
 
 const _supabase =
   supabaseUrl && supabaseKey && createClient(supabaseUrl, supabaseKey);
@@ -21,7 +20,7 @@ function getClient() {
 async function getDefinition(context: Context) {
   const supabase = getClient();
 
-  const { token, id } = context.params;
+  const { id } = context.params;
 
   const { data, error } = await supabase
     .from(ENTRY_DEFINITIONS_TABLE_NAME)
@@ -33,6 +32,7 @@ field_definitions(id, type, name, label, description, choices, default_value, or
 `,
     )
     .eq("id", id)
+    // todo: filter for user token!
     .limit(1);
 
   if (error) {

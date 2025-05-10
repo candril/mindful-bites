@@ -1,6 +1,6 @@
 import { useToken } from "@/components/AuthenticationContext";
-import { EntryForm } from "@/components/EntryForm";
-import { useFieldDefinitions } from "@/components/useFieldDefinitions";
+import { EntryForm } from "@/components/form/EntryForm";
+import { useFieldDefinitions } from "@/components/form/useFieldDefinitions";
 import { Entry } from "@/data/useStorage";
 import { FC } from "react";
 

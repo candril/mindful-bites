@@ -11,7 +11,10 @@ function getMealTypeName(type: MealType): string | undefined {
 }
 
 function getComponentSummary(entry: Entry) {
-  return entry.data.components?.slice(0, 3).join(", ") ?? "Just Something";
+  return (
+    (entry.data.components as string[]).slice(0, 3).join(", ") ??
+    "Just Something"
+  );
 }
 
 export const EntryTile: FunctionComponent<{
@@ -19,7 +22,7 @@ export const EntryTile: FunctionComponent<{
   onClick?: () => void;
   onDeleteClick?: () => void;
 }> = ({ entry, onClick, onDeleteClick }) => {
-  const typeName = getMealTypeName(entry.data.mealType);
+  const typeName = getMealTypeName(entry.data.mealType as MealType);
   const summary = getComponentSummary(entry);
   const rating = getMealScore(entry);
 

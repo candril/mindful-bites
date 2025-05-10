@@ -1,6 +1,6 @@
 import React, { ComponentType, FC } from "react";
 import { useEntryForm } from "./useEntryForm";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Entry, useEntries } from "@/data/useStorage";
 import { OptionPicker } from "./OptionPicker";
 import {

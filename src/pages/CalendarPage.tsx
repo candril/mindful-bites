@@ -4,7 +4,7 @@ import { Entry, useEntries } from "../data/useStorage";
 import { FC, useState } from "react";
 import { getMealScore } from "../data/getMealScore";
 import { Dot } from "../components/Dot";
-import { EntryForm } from "../components/EntryForm";
+import { EntryForm } from "../components/form/EntryForm";
 import { Day } from "../components/CalendarGrid";
 import {
   Drawer,
@@ -14,7 +14,6 @@ import {
 } from "../components/ui/drawer";
 import { Button } from "../components/ui/button";
 import { X } from "lucide-react";
-import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
 import { EntryPicker } from "@/components/EntryPicker";
@@ -24,8 +23,6 @@ const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
-
-  const token = useToken();
 
   const handleDayClick = (day: Day) => {
     setSelectedDay(day);
@@ -40,7 +37,7 @@ const CalendarPage: FC = () => {
   const getDayEntries = (date: Date) =>
     entries.filter((e) => isSameDay(e.date, date));
 
-  const { entries, updateEntry, deleteEntry, createEntry } = useEntries(token);
+  const { entries, updateEntry, deleteEntry, createEntry } = useEntries();
 
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
 
@@ -51,12 +48,12 @@ const CalendarPage: FC = () => {
         <EntryForm
           entry={selectedEntry}
           // commonComponents={commonComponents}
-          onSubmit={async (entry) => {
+          onSubmit={async (entry: Entry) => {
             try {
               reset();
               await updateEntry(entry);
               return true;
-            } catch (error) {
+            } catch {
               toast.error("Oops, entry could not be stored!");
               return false;
             }
@@ -91,7 +88,7 @@ const CalendarPage: FC = () => {
               reset();
               await createEntry(entry);
               return true;
-            } catch (error) {
+            } catch {
               toast.error("Oops, entry could not be stored!");
               return false;
             }

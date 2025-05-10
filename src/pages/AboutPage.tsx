@@ -77,7 +77,7 @@ const AboutPage = () => {
         entry.data.mealType,
         entry.data.healthRating,
         entry.data.portionSize,
-        `"${entry.data.components.join(", ")}"`,
+        `"${(entry.data.components as string[]).join(", ")}"`,
       ];
       csvRows.push(row.join(","));
     });

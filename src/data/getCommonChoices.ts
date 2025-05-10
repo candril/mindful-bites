@@ -1,4 +1,4 @@
-import { FieldDefinition } from "@/components/useFieldDefinitions";
+import { FieldDefinition } from "@/components/form/useFieldDefinitions";
 import { Entry } from "./useStorage";
 
 export function getCommonChoices(
@@ -26,5 +26,5 @@ export function getCommonChoices(
       }, new Map<string, number>())
       ?.entries() ?? [];
 
-  return [...map].sort(([_, a], [__, b]) => b - a).map(([c]) => c);
+  return [...map].sort(([, a], [, b]) => b - a).map(([c]) => c);
 }

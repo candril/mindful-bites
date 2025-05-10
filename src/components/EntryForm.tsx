@@ -19,10 +19,12 @@ const ChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
   const options =
     definition.choices?.map((c) => ({ ...c, value: c.value as string })) ?? [];
 
+  console.log({ options });
+
   return (
     <OptionPicker
       onChange={onChange}
-      variant="dark"
+      variant={options.find((c) => c.color) ? "color" : "dark"}
       columns={options.length}
       options={options}
       value={value as string}

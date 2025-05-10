@@ -44,8 +44,8 @@ export function OptionPicker({
             "px-3 py-2 text-sm h-auto",
             value === option.value &&
               variant === "color" &&
-              option.color &&
-              `${option.color} text-white`,
+              `bg-${option.color}` &&
+              `bg-${option.color} text-white`,
             value === option.value &&
               variant === "dark" &&
               "bg-gray-900 text-white",

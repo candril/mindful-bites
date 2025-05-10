@@ -5,6 +5,7 @@ export type ChoiceItem = {
   key: string;
   title: string;
   value: unknown;
+  color?: string;
 };
 
 export type FieldType =

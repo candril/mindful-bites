@@ -31,9 +31,10 @@ export function ComponentPicker({
     .map((c) => ({ name: c, isSelected: components.includes(c) }))
     .filter(
       (c) =>
-        c.isSelected ||
-        newComponent?.length === 0 ||
-        c.name.toLocaleLowerCase().includes(filterValue),
+        c.name &&
+        (c.isSelected ||
+          newComponent?.length === 0 ||
+          c.name.toLocaleLowerCase().includes(filterValue)),
     )
     .sort((component) => {
       return component.isSelected ? -1 : 1;

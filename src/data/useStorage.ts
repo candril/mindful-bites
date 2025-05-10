@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useData } from "./useData";
+import { useToken } from "@/components/AuthenticationContext";
 
 export type Entry = {
   id: string;
@@ -46,7 +47,8 @@ async function createEntryRemote(entry: Entry, userToken: string) {
   throw new Error(res.statusText);
 }
 
-export function useEntries(token: string) {
+export function useEntries() {
+  const token = useToken();
   const { data, mutate } = useData<Entry[]>(`/api/users/${token}/entries`);
 
   const entries = data ?? [];

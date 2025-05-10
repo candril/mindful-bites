@@ -1,29 +1,24 @@
-// import { useMeals } from "../data/useStorage";
 import { FC, useState } from "react";
 import { EntryTile } from "@/components/EntryTile";
-import { MEAL_TYPE_MAP, MealEntry } from "@/data/meals";
+import { MEAL_TYPE_MAP } from "@/data/meals";
 import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
-import { useToken } from "@/components/AuthenticationContext";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { EntryForm } from "@/components/MealForm";
+import { EntryForm } from "@/components/EntryForm";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-import { getCommonComponents } from "@/data/getCommonComponents";
+import { Entry, useEntries } from "@/data/useStorage";
 
 const AgendaPage: FC = () => {
-  const token = useToken();
-  // const { entries, updateEntry } = useMeals(token);
+  const { entries, updateEntry } = useEntries();
 
-  const commonComponents = getCommonComponents(entries);
-
-  const [selectedMeal, setSelectedMeal] = useState<MealEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
   const entriesByYearMonthDay = groupByYearMonthDay(entries);
 
@@ -67,14 +62,14 @@ const AgendaPage: FC = () => {
                     {daysInMonth[day]
                       .sort(
                         (a, b) =>
-                          MEAL_TYPE_MAP[a.mealType].order -
-                          MEAL_TYPE_MAP[b.mealType].order,
+                          MEAL_TYPE_MAP[a.data.mealType].order -
+                          MEAL_TYPE_MAP[b.data.mealType].order,
                       )
                       .map((meal) => (
                         <EntryTile
                           key={meal.id}
                           meal={meal}
-                          onClick={() => setSelectedMeal(meal)}
+                          onClick={() => setSelectedEntry(meal)}
                         />
                       ))}
                   </div>
@@ -86,8 +81,8 @@ const AgendaPage: FC = () => {
       })}
 
       <Drawer
-        open={selectedMeal != null}
-        onOpenChange={(open) => !open && setSelectedMeal(null)}
+        open={selectedEntry != null}
+        onOpenChange={(open) => !open && setSelectedEntry(null)}
       >
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
           <DrawerHeader className="flex flex-row p-0">
@@ -97,21 +92,19 @@ const AgendaPage: FC = () => {
             <Button
               size="icon"
               variant="outline"
-              onClick={() => setSelectedMeal(null)}
+              onClick={() => setSelectedEntry(null)}
               className="shadow-none border-none"
             >
               <X className="size-4" />
             </Button>
           </DrawerHeader>
           <div className="overflow-auto">
-            {selectedMeal && (
+            {selectedEntry && (
               <EntryForm
-                date={new Date(selectedMeal.date)}
-                entry={selectedMeal}
-                commonComponents={commonComponents}
+                entry={selectedEntry}
                 onSubmit={async (entry) => {
                   try {
-                    setSelectedMeal(null);
+                    setSelectedEntry(null);
                     await updateEntry(entry);
                     return true;
                   } catch {
@@ -130,9 +123,9 @@ const AgendaPage: FC = () => {
 
 export default AgendaPage;
 
-function groupByYearMonthDay(entries: MealEntry[]) {
+function groupByYearMonthDay(entries: Entry[]) {
   return entries.reduce<
-    Record<string, Record<string, Record<string, MealEntry[]>>>
+    Record<string, Record<string, Record<string, Entry[]>>>
   >((years, meal) => {
     const date = new Date(meal.date);
     const year = date.getFullYear().toString();

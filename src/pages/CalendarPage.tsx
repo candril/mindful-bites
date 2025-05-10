@@ -4,7 +4,7 @@ import { Entry, useEntries } from "../data/useStorage";
 import { FC, useState } from "react";
 import { getMealScore } from "../data/getMealScore";
 import { Dot } from "../components/Dot";
-import { EntryForm } from "../components/MealForm";
+import { EntryForm } from "../components/EntryForm";
 import { Day } from "../components/CalendarGrid";
 import {
   Drawer,
@@ -17,8 +17,8 @@ import { X } from "lucide-react";
 import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
-import { useFieldDefinitions } from "@/components/useFieldDefinitions";
 import { EntryPicker } from "@/components/MealPicker";
+import { NewEntryForm } from "./NewEntryForm";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
@@ -45,7 +45,7 @@ const CalendarPage: FC = () => {
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
 
   const getSheetContent = () => {
-    // const commonComponents = getCommonComponents(entries);
+    // const commonComponents = getCommonChoices(entries);
     if (selectedMealEnty) {
       return (
         <EntryForm
@@ -138,38 +138,6 @@ const CalendarPage: FC = () => {
         </DrawerContent>
       </Drawer>
     </Layout>
-  );
-};
-
-const NewEntryForm: FC<{
-  date: Date;
-  onSubmit: (data: Entry) => Promise<boolean>;
-}> = ({ date, onSubmit }) => {
-  const token = useToken();
-  const fields = useFieldDefinitions("26386876-5fd6-4a2d-8d03-064ddb3fd909");
-
-  if (!fields || fields.length < 1) {
-    return null;
-  }
-
-  const initialData = fields.reduce<Record<string, unknown>>(
-    (current, next) => ({ ...current, [next.name]: next.defaultValue }),
-    {} as Record<string, unknown>,
-  );
-
-  return (
-    <EntryForm
-      entry={{
-        id: crypto.randomUUID(),
-        data: initialData,
-        date: date.toISOString(),
-        definitionId: "26386876-5fd6-4a2d-8d03-064ddb3fd909",
-        userToken: token,
-      }}
-      date={date}
-      // commonComponents={commonComponents}
-      onSubmit={onSubmit}
-    />
   );
 };
 

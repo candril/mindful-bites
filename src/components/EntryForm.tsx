@@ -1,24 +1,15 @@
 import React, { ComponentType, FC } from "react";
 import { useEntryForm } from "./useMealForm";
 import { Button } from "./ui/button";
-import { Entry } from "@/data/useStorage";
-import { useToken } from "./AuthenticationContext";
-import { useData } from "@/data/useData";
+import { Entry, useEntries } from "@/data/useStorage";
 import { OptionPicker } from "./OptionPicker";
 import {
-  EntryDefinition,
   FieldDefinition,
   FieldType,
+  useFieldDefinitions,
 } from "./useFieldDefinitions";
-
-function useFieldDefinitions(definitionId: string) {
-  const token = useToken();
-  const { data } = useData<EntryDefinition>(
-    `/api/users/${token}/definitions/${definitionId}`,
-  );
-
-  return data?.fields ?? [];
-}
+import { ComponentPicker } from "./ComponentPicker";
+import { getCommonChoices } from "@/data/getCommonChoices";
 
 const NoopField: FC = () => {
   return <div>N/A</div>;
@@ -39,6 +30,43 @@ const ChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
   );
 };
 
+const ComboChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
+  const { entries } = useEntries();
+  const commonComponents = getCommonChoices(definition, entries);
+  const components = value ? (value as string[]) : [];
+
+  return (
+    <ComponentPicker
+      commonComponents={commonComponents}
+      components={components}
+      onAdd={handleAddComponent}
+      onRemove={(v) => onChange(components.filter((c) => v !== c))}
+    />
+  );
+
+  function handleAddComponent(component: string) {
+    const new_components = component
+      .split(",")
+      .map((c) => c.trim())
+      .filter((c) => c.length);
+
+    if (new_components.length === 0) {
+      return;
+    }
+
+    const existingComponents = new Set(components);
+    const merged_components = [...components];
+    for (const c of new_components) {
+      if (!existingComponents.has(c)) {
+        merged_components.push(c);
+        existingComponents.add(c);
+      }
+    }
+
+    onChange(merged_components);
+  }
+};
+
 type FieldProps = {
   definition: FieldDefinition;
   value: unknown;
@@ -49,11 +77,12 @@ function getFieldComponent(type: FieldType): ComponentType<FieldProps> {
   switch (type) {
     case "choice":
       return ChoiceField;
+    case "combo_multi_choice":
+      return ComboChoiceField;
     case "text":
     case "checkbox":
     case "date":
     case "multi_choice":
-    case "combo_multi_choice":
       return NoopField;
   }
 }
@@ -83,11 +112,7 @@ export const EntryForm: FC<{
   entry: Entry;
   commonComponents?: string[];
   onSubmit: (data: Entry) => Promise<boolean>;
-}> = ({
-  onSubmit,
-  entry,
-  // commonComponents = [],
-}) => {
+}> = ({ onSubmit, entry }) => {
   const { getFormData, data, setDataField, resetForm } = useEntryForm(entry);
 
   const fields = useFieldDefinitions(entry.definitionId);

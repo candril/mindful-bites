@@ -25,6 +25,7 @@ export type FieldDefinition = {
   choices?: ChoiceItem[];
   order: number;
   defaultValue: string;
+  definitionId: string;
 };
 
 export type EntryDefinition = {
@@ -40,5 +41,5 @@ export function useFieldDefinitions(definitionId: string) {
     `/api/users/${token}/definitions/${definitionId}`,
   );
 
-  return data?.fields ?? [];
+  return data?.fields.map((f) => ({ ...f, definitionId })) ?? [];
 }

@@ -15,10 +15,10 @@ function getComponentSummary(entry: Entry) {
 }
 
 export const EntryTile: FunctionComponent<{
-  meal: Entry;
+  entry: Entry;
   onClick?: () => void;
   onDeleteClick?: () => void;
-}> = ({ meal: entry, onClick, onDeleteClick }) => {
+}> = ({ entry, onClick, onDeleteClick }) => {
   const typeName = getMealTypeName(entry.data.mealType);
   const summary = getComponentSummary(entry);
   const rating = getMealScore(entry);

@@ -65,11 +65,11 @@ const AgendaPage: FC = () => {
                           MEAL_TYPE_MAP[a.data.mealType].order -
                           MEAL_TYPE_MAP[b.data.mealType].order,
                       )
-                      .map((meal) => (
+                      .map((entry) => (
                         <EntryTile
-                          key={meal.id}
-                          meal={meal}
-                          onClick={() => setSelectedEntry(meal)}
+                          key={entry.id}
+                          entry={entry}
+                          onClick={() => setSelectedEntry(entry)}
                         />
                       ))}
                   </div>
@@ -87,7 +87,7 @@ const AgendaPage: FC = () => {
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
           <DrawerHeader className="flex flex-row p-0">
             <DrawerTitle className="flex-1 self-center justify-center text-3xl">
-              Update Meal Entry
+              Update Entry
             </DrawerTitle>
             <Button
               size="icon"
@@ -108,7 +108,7 @@ const AgendaPage: FC = () => {
                     await updateEntry(entry);
                     return true;
                   } catch {
-                    toast.error("Ooops, the meal could not be stored");
+                    toast.error("Ooops, the entry could not be stored");
                     return false;
                   }
                 }}
@@ -126,8 +126,8 @@ export default AgendaPage;
 function groupByYearMonthDay(entries: Entry[]) {
   return entries.reduce<
     Record<string, Record<string, Record<string, Entry[]>>>
-  >((years, meal) => {
-    const date = new Date(meal.date);
+  >((years, entry) => {
+    const date = new Date(entry.date);
     const year = date.getFullYear().toString();
     const month = date.getMonth().toString();
     const day = date.getDate();
@@ -136,7 +136,7 @@ function groupByYearMonthDay(entries: Entry[]) {
     if (!years[year][month]) years[year][month] = {};
     if (!years[year][month][day]) years[year][month][day] = [];
 
-    years[year][month][day].push(meal);
+    years[year][month][day].push(entry);
     return years;
   }, {});
 }

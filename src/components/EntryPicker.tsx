@@ -16,7 +16,7 @@ export const EntryPicker: React.FC<{
         {entries.map((m) => (
           <EntryTile
             key={m.id}
-            meal={m}
+            entry={m}
             onDeleteClick={() => onRemoveClick(m)}
             onClick={() => onEntryClick(m)}
           />

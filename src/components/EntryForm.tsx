@@ -1,5 +1,5 @@
 import React, { ComponentType, FC } from "react";
-import { useEntryForm } from "./useMealForm";
+import { useEntryForm } from "./useEntryForm";
 import { Button } from "./ui/button";
 import { Entry, useEntries } from "@/data/useStorage";
 import { OptionPicker } from "./OptionPicker";
@@ -142,7 +142,7 @@ export const EntryForm: FC<{
         ))}
 
       <Button type="submit" className="self-end">
-        Save Meal Entry
+        Save Entry
       </Button>
     </form>
   );

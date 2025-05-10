@@ -24,7 +24,7 @@ export const Layout: FC<{ children: ReactNode; title?: string }> = ({
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
           <DrawerHeader className="flex flex-row p-0">
             <DrawerTitle className="flex-1 self-center justify-center text-3xl">
-              Create Meal Entry
+              Create Entry
             </DrawerTitle>
             <Button
               size="icon"
@@ -44,7 +44,7 @@ export const Layout: FC<{ children: ReactNode; title?: string }> = ({
                   await createEntry(entry);
                   return true;
                 } catch {
-                  toast.error("Ooops, the meal could not be stored");
+                  toast.error("Ooops, the entry could not be stored");
                   return false;
                 }
               }}

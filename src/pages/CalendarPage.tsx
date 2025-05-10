@@ -17,13 +17,13 @@ import { X } from "lucide-react";
 import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
-import { EntryPicker } from "@/components/MealPicker";
+import { EntryPicker } from "@/components/EntryPicker";
 import { NewEntryForm } from "./NewEntryForm";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
-  const [selectedMealEnty, setSelectedMealEntry] = useState<Entry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
   const token = useToken();
 
@@ -34,7 +34,7 @@ const CalendarPage: FC = () => {
   const reset = () => {
     setShowEntryPicker(true);
     setSelectedDay(null);
-    setSelectedMealEntry(null);
+    setSelectedEntry(null);
   };
 
   const getDayEntries = (date: Date) =>
@@ -46,10 +46,10 @@ const CalendarPage: FC = () => {
 
   const getSheetContent = () => {
     // const commonComponents = getCommonChoices(entries);
-    if (selectedMealEnty) {
+    if (selectedEntry) {
       return (
         <EntryForm
-          entry={selectedMealEnty}
+          entry={selectedEntry}
           // commonComponents={commonComponents}
           onSubmit={async (entry) => {
             try {
@@ -57,7 +57,7 @@ const CalendarPage: FC = () => {
               await updateEntry(entry);
               return true;
             } catch (error) {
-              toast.error("Oops, meal could not be stored!");
+              toast.error("Oops, entry could not be stored!");
               return false;
             }
           }}
@@ -70,12 +70,12 @@ const CalendarPage: FC = () => {
         <EntryPicker
           entries={dayEntries}
           onAddClick={() => setShowEntryPicker(false)}
-          onEntryClick={(entry) => setSelectedMealEntry(entry)}
+          onEntryClick={(entry) => setSelectedEntry(entry)}
           onRemoveClick={async (entry) => {
             try {
               await deleteEntry(entry.id);
             } catch {
-              toast.error("Ooops, could not delete the meal");
+              toast.error("Ooops, could not delete the entry");
             }
           }}
         />
@@ -92,7 +92,7 @@ const CalendarPage: FC = () => {
               await createEntry(entry);
               return true;
             } catch (error) {
-              toast.error("Oops, meal could not be stored!");
+              toast.error("Oops, entry could not be stored!");
               return false;
             }
           }}

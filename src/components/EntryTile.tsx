@@ -21,12 +21,10 @@ function createNumberReplacer(
     if (!field) {
       return 0;
     }
-    const mod = field.choices?.find((c) => c.value === value)?.modifier;
 
     switch (field.type) {
       case "choice":
-        console.log({ mod, fieldName, data });
-        return mod ?? 0;
+        return field.choices?.find((c) => c.value === value)?.modifier ?? 0;
       case "combo_multi_choice":
       case "multi_choice":
       case "checkbox":
@@ -75,19 +73,13 @@ export const EntryTile: FunctionComponent<{
   const title = evaluate(entry.definition.titleTemplate, textReplacer);
   const subTitle = evaluate(entry.definition.subtitleTemplate, textReplacer);
 
-  // TODO: refactor ExpressionParser to create instance per expression only once,
-  // -> tokenise only once...
-  const expr = new ExpressionParser(numberReplacer);
+  const expr = new ExpressionParser(
+    entry.definition.parsedRatingExpression,
+    numberReplacer,
+  );
 
-  const score = expr.parse(entry.definition.ratingExpression);
+  const score = expr.evaluate();
   const colorCoded = getRating(score);
-
-  console.log({
-    score,
-    colorCoded,
-    data: entry.data,
-    expr: entry.definition.ratingExpression,
-  });
 
   return (
     <div

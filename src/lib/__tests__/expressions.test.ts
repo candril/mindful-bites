@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ExpressionParser } from "../expressions";
+import { ExpressionParser, ParsedExpression } from "../expressions";
 
 const testCases = [
   {
@@ -37,8 +37,9 @@ describe("Template evaluation", () => {
   }>(testCases)(
     'evaluates "$expression" to "$expected"',
     ({ expression, replace, expected }) => {
-      const parser = new ExpressionParser(replace);
-      const result = parser.parse(expression);
+      const parsed = new ParsedExpression(expression);
+      const parser = new ExpressionParser(parsed, replace);
+      const result = parser.evaluate();
       expect(result).toBe(expected);
     },
   );

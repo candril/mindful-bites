@@ -1,5 +1,6 @@
 import { useData } from "@/data/useData";
 import { useToken } from "../AuthenticationContext";
+import { ParsedExpression } from "@/lib/expressions";
 
 export type ChoiceItem = {
   key: string;
@@ -38,6 +39,7 @@ export type EntryDefinition = {
   titleTemplate: string;
   subtitleTemplate: string;
   ratingExpression: string;
+  parsedRatingExpression: ParsedExpression;
 };
 
 export function useEntryDefinitions() {
@@ -46,7 +48,10 @@ export function useEntryDefinitions() {
     `/api/users/${token}/definitions/`,
   );
 
-  return data;
+  return data?.map((d) => ({
+    ...d,
+    parsedRatingExpression: new ParsedExpression(d.ratingExpression),
+  }));
 }
 
 export function useFieldDefinitions(definitionId: string) {

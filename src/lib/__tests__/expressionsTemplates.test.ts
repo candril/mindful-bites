@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { ExpressionParser } from "../expressions";
+import { ExpressionParser, ParsedExpression } from "../expressions";
 import { evaluate } from "../templates.ts";
 
 const testCases = [
   {
     template: "The value is {12 + 3 + pansen}! Congratulations",
     replace: (expression: string) =>
-      new ExpressionParser(() => 8).parse(expression).toString(),
+      new ExpressionParser(new ParsedExpression(expression), () => 8)
+        .evaluate()
+        .toString(),
     expected: "The value is 23! Congratulations",
   },
 ];

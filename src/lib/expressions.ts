@@ -15,19 +15,15 @@ interface Token {
   position: number;
 }
 
-export class ExpressionParser {
+export class ParsedExpression {
   private tokens: Token[] = [];
-  private position: number = 0;
-  private variableResolver: (varName: string) => number;
 
-  constructor(variableResolver: (varName: string) => number) {
-    this.variableResolver = variableResolver;
+  constructor(expression: string) {
+    this.tokens = this.tokenize(expression).tokens;
   }
 
-  parse(expression: string): number {
-    this.tokens = this.tokenize(expression).tokens;
-    this.position = 0;
-    return this.parseExpression();
+  public getTokens(): Token[] {
+    return this.tokens;
   }
 
   private tokenize(expression: string): TokenizerResult {
@@ -102,8 +98,26 @@ export class ExpressionParser {
 
     return { tokens };
   }
+}
+export class ExpressionParser {
+  private position: number = 0;
+  private variableResolver: (varName: string) => number;
+  private tokens: Token[];
 
-  private parseExpression(): number {
+  constructor(
+    expression: ParsedExpression,
+    variableResolver: (varName: string) => number,
+  ) {
+    this.tokens = expression.getTokens();
+    this.variableResolver = variableResolver;
+  }
+
+  evaluate(): number {
+    this.position = 0;
+    return this.evaluateExpression();
+  }
+
+  private evaluateExpression(): number {
     return this.parseAddSubtract();
   }
 
@@ -181,7 +195,7 @@ export class ExpressionParser {
 
     if (token.type === "LEFT_PAREN") {
       this.position++;
-      const result = this.parseExpression();
+      const result = this.evaluateExpression();
 
       if (
         this.position >= this.tokens.length ||

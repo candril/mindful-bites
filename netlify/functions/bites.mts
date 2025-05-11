@@ -1,6 +1,26 @@
 import { Config, Context } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
-import { MealEntry } from "../../src/data/meals.ts";
+
+type MealType = "breakfast" | "lunch" | "dinner" | "snack";
+
+type HealthRating =
+  | "very-unhealthy"
+  | "unhealthy"
+  | "neutral"
+  | "healthy"
+  | "very-healthy";
+
+type PortionSize = "small" | "just-right" | "large";
+
+type MealEntry = {
+  id: string;
+  date: string;
+  components: string[];
+  healthRating: HealthRating;
+  portionSize: PortionSize;
+  mealType: MealType;
+  userToken?: string;
+};
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;

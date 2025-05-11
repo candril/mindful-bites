@@ -6,6 +6,7 @@ export type ChoiceItem = {
   title: string;
   value: unknown;
   color?: string;
+  modifier?: number;
 };
 
 export type FieldType =
@@ -34,8 +35,9 @@ export type EntryDefinition = {
   name: string;
   description: string;
   fields: FieldDefinition[];
-  titleTemplate: string; // "{components}"
-  subtitleTemplate: string; // "{meal_type}"
+  titleTemplate: string;
+  subtitleTemplate: string;
+  ratingExpression: string;
 };
 
 export function useEntryDefinitions() {

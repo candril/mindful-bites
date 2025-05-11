@@ -1,17 +1,20 @@
 import { useToken } from "@/components/AuthenticationContext";
 import { EntryForm } from "@/components/form/EntryForm";
-import { useFieldDefinitions } from "@/components/form/useFieldDefinitions";
+import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { Entry } from "@/data/useStorage";
 import { FC } from "react";
-
+const MEAL_DEFINITION = "26386876-5fd6-4a2d-8d03-064ddb3fd909";
 export const NewEntryForm: FC<{
   date: Date;
   onSubmit: (data: Entry) => Promise<boolean>;
 }> = ({ date, onSubmit }) => {
   const token = useToken();
-  const fields = useFieldDefinitions("26386876-5fd6-4a2d-8d03-064ddb3fd909");
+  const definitions = useEntryDefinitions();
 
-  if (!fields || fields.length < 1) {
+  const definition = definitions?.find((d) => d.id === MEAL_DEFINITION);
+  const fields = definition?.fields;
+
+  if (!definition || !fields || fields.length < 1) {
     return null;
   }
 
@@ -26,7 +29,8 @@ export const NewEntryForm: FC<{
         id: crypto.randomUUID(),
         data: initialData,
         date: date.toISOString(),
-        definitionId: "26386876-5fd6-4a2d-8d03-064ddb3fd909",
+        definitionId: MEAL_DEFINITION,
+        definition,
         userToken: token,
       }}
       // commonComponents={commonComponents}

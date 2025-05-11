@@ -23,6 +23,14 @@ const columnClasses: { [col: number]: string } = {
   5: "grid-cols-5",
 };
 
+const optionColorMap: { [color: string]: string } = {
+  red: "bg-red-600",
+  orange: "bg-orange-400",
+  yellow: "bg-yellow-400",
+  green: "bg-green-400",
+  emerald: "bg-emerald-500",
+};
+
 export function OptionPicker({
   options,
   value,
@@ -44,8 +52,9 @@ export function OptionPicker({
             "px-3 py-2 text-sm h-auto",
             value === option.value &&
               variant === "color" &&
-              `bg-${option.color}` &&
-              `bg-${option.color} text-white`,
+              option.color &&
+              `${optionColorMap[option.color]}` &&
+              `${optionColorMap[option.color]} text-white`,
             value === option.value &&
               variant === "dark" &&
               "bg-gray-900 text-white",

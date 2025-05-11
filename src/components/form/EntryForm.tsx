@@ -19,8 +19,6 @@ const ChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
   const options =
     definition.choices?.map((c) => ({ ...c, value: c.value as string })) ?? [];
 
-  console.log({ options });
-
   return (
     <OptionPicker
       onChange={onChange}
@@ -131,17 +129,18 @@ export const EntryForm: FC<{
       onSubmit={handleFormSubmit}
       className="flex flex-col space-y-10 bg-white"
     >
-      {fields
-        .sort((a, b) => a.order - b.order)
-        .map((field) => (
-          <div key={field.name} className="space-y-3">
-            <Field
-              definition={field}
-              value={data[field.name]}
-              onChange={(v) => setDataField(field.name, v)}
-            />
-          </div>
-        ))}
+      {fields &&
+        fields
+          .sort((a, b) => a.order - b.order)
+          .map((field) => (
+            <div key={field.name} className="space-y-3">
+              <Field
+                definition={field}
+                value={data[field.name]}
+                onChange={(v) => setDataField(field.name, v)}
+              />
+            </div>
+          ))}
 
       <Button type="submit" className="self-end">
         Save Entry

@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import { EntryTile } from "@/components/EntryTile";
-import { MEAL_TYPE_MAP, MealType } from "@/data/meals";
 import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
 import {
@@ -60,11 +59,12 @@ const AgendaPage: FC = () => {
                   </h3>
                   <div className="space-y-3">
                     {daysInMonth[day]
-                      .sort(
-                        (a, b) =>
-                          MEAL_TYPE_MAP[a.data.mealType as MealType].order -
-                          MEAL_TYPE_MAP[b.data.mealType as MealType].order,
-                      )
+                      // TODO: sort by choice item order...
+                      // .sort(
+                      //   (a, b) =>
+                      //     MEAL_TYPE_MAP[a.data.mealType as MealType].order -
+                      //     MEAL_TYPE_MAP[b.data.mealType as MealType].order,
+                      // )
                       .map((entry) => (
                         <EntryTile
                           key={entry.id}

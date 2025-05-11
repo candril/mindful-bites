@@ -13,6 +13,7 @@ name,
 description,
 title_template,
 subtitle_template,
+rating_expression,
 field_definitions(id, type, name, label, description, choices, default_value, order)
 `;
 
@@ -129,6 +130,7 @@ function mapToEntry(dbEntry: any): EntryDefinition {
     description: dbEntry.description,
     titleTemplate: dbEntry.title_template,
     subtitleTemplate: dbEntry.subtitle_template,
+    ratingExpression: dbEntry.rating_expression,
     fields: dbEntry.field_definitions.map((f: any) => ({
       defaultValue: f.default_value,
       description: f.description,

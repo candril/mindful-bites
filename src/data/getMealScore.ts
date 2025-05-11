@@ -9,13 +9,23 @@ export const ratingColorMap: Record<RatingColor, string> = {
   excellent: "bg-green-700",
 };
 
-const mealColorCoding: RatingColor[] = [
+const colorCoding: RatingColor[] = [
   "bad",
   "poor",
   "average",
   "good",
   "excellent",
 ];
+
+export function getRating(score: number): RatingColor {
+  if (score <= 0) {
+    return "bad";
+  } else if (score >= colorCoding.length) {
+    return "excellent";
+  } else {
+    return colorCoding[score];
+  }
+}
 
 export function getMealScore(entry: Entry): RatingColor {
   let score = 3;
@@ -48,9 +58,9 @@ export function getMealScore(entry: Entry): RatingColor {
 
   if (score <= 0) {
     return "bad";
-  } else if (score >= mealColorCoding.length) {
+  } else if (score >= colorCoding.length) {
     return "excellent";
   } else {
-    return mealColorCoding[score];
+    return colorCoding[score];
   }
 }

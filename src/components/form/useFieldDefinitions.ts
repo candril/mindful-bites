@@ -34,13 +34,23 @@ export type EntryDefinition = {
   name: string;
   description: string;
   fields: FieldDefinition[];
+  titleTemplate: string; // "{components}"
+  subtitleTemplate: string; // "{meal_type}"
 };
 
-export function useFieldDefinitions(definitionId: string) {
+export function useEntryDefinitions() {
   const token = useToken();
-  const { data } = useData<EntryDefinition>(
-    `/api/users/${token}/definitions/${definitionId}`,
+  const { data } = useData<EntryDefinition[]>(
+    `/api/users/${token}/definitions/`,
   );
 
-  return data?.fields.map((f) => ({ ...f, definitionId })) ?? [];
+  return data;
+}
+
+export function useFieldDefinitions(definitionId: string) {
+  const entryDefinitions = useEntryDefinitions();
+
+  const definition = entryDefinitions?.find((e) => e.id === definitionId);
+
+  return definition?.fields.map((f) => ({ ...f, definitionId }));
 }

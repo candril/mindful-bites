@@ -1,12 +1,17 @@
 import { useCallback } from "react";
 import { useData } from "./useData";
 import { useToken } from "@/components/AuthenticationContext";
+import {
+  EntryDefinition,
+  useEntryDefinitions,
+} from "@/components/form/useFieldDefinitions";
 
 export type Entry = {
   id: string;
   date: string;
   data: Record<string, unknown>;
   definitionId: string;
+  definition: EntryDefinition;
   userToken: string;
 };
 
@@ -24,7 +29,7 @@ async function deleteEntryRemote(id: string, token: string) {
 async function updateEntryRemote(entry: Entry, userToken: string) {
   const res = await fetch(`/api/users/${userToken}/entries/${entry.id}`, {
     method: "PUT",
-    body: JSON.stringify({ ...entry, userToken }),
+    body: JSON.stringify({ ...entry, userToken, definition: undefined }),
   });
 
   if (res.ok) {
@@ -37,7 +42,7 @@ async function updateEntryRemote(entry: Entry, userToken: string) {
 async function createEntryRemote(entry: Entry, userToken: string) {
   const res = await fetch(`/api/users/${userToken}/entries`, {
     method: "POST",
-    body: JSON.stringify({ ...entry, userToken }),
+    body: JSON.stringify({ ...entry, userToken, definition: undefined }),
   });
 
   if (res.ok) {
@@ -50,8 +55,25 @@ async function createEntryRemote(entry: Entry, userToken: string) {
 export function useEntries() {
   const token = useToken();
   const { data, mutate } = useData<Entry[]>(`/api/users/${token}/entries`);
+  const definitions = useEntryDefinitions();
 
-  const entries = data ?? [];
+  const definitionMap = new Map<string, EntryDefinition>(
+    definitions?.map((d) => [d.id, d]) ?? [],
+  );
+
+  const entries = definitions
+    ? (data?.map((e) => {
+        const definition = definitionMap.get(e.definitionId);
+        if (!definition) {
+          throw new Error(`Missing defintion with ID '${e.definitionId}'`);
+        }
+
+        return {
+          ...e,
+          definition,
+        };
+      }) ?? [])
+    : [];
 
   const createEntry = useCallback(
     async (entry: Entry) => {

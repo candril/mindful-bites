@@ -76,8 +76,6 @@ async function getEntries(context: Context) {
     throw new Error("Failed to load bites");
   }
 
-  console.log(data);
-
   const mappedEntry = data.map((entry: any) => ({
     id: entry.id,
     definitionId: entry.definition_id,

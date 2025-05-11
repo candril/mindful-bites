@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/fav.svg"
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/fav.svg",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@netlify/functions": "^3.0.4",
@@ -48,6 +50,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "vitest": "^3.1.3"
   }
 }

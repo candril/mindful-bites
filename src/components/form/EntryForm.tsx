@@ -3,13 +3,10 @@ import { useEntryForm } from "./useEntryForm";
 import { Button } from "../ui/button";
 import { Entry, useEntries } from "@/data/useStorage";
 import { OptionPicker } from "./OptionPicker";
-import {
-  FieldDefinition,
-  FieldType,
-  useFieldDefinitions,
-} from "./useFieldDefinitions";
+import { useFieldDefinitions } from "./useFieldDefinitions";
 import { ComponentPicker } from "./ComponentPicker";
 import { getCommonChoices } from "@/data/getCommonChoices";
+import { FieldDefinition, FieldType } from "@/data/EntryDefinition";
 
 const NoopField: FC = () => {
   return <div>N/A</div>;

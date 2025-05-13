@@ -2,7 +2,6 @@ import { format, isSameDay } from "date-fns";
 import { Calendar } from "../components/Calendar";
 import { Entry, useEntries } from "../data/useStorage";
 import { FC, useState } from "react";
-import { getMealScore } from "../data/getMealScore";
 import { Dot } from "../components/Dot";
 import { EntryForm } from "../components/form/EntryForm";
 import { Day } from "../components/CalendarGrid";
@@ -18,6 +17,7 @@ import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
 import { EntryPicker } from "@/components/EntryPicker";
 import { NewEntryForm } from "./NewEntryForm";
+import { getEnryScore } from "@/data/getEntryScore";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
@@ -105,8 +105,8 @@ const CalendarPage: FC = () => {
         startMonth={new Date()}
         onDayClick={handleDayClick}
         additionalContent={(day) =>
-          getDayEntries(day.date).map((m) => (
-            <Dot key={m.id} rating={getMealScore(m)} />
+          getDayEntries(day.date).map((entry) => (
+            <Dot key={entry.id} rating={getEnryScore(entry)} />
           ))
         }
       />

@@ -1,4 +1,4 @@
-import { FieldDefinition } from "@/components/form/useFieldDefinitions";
+import { FieldDefinition } from "./EntryDefinition";
 import { Entry } from "./useStorage";
 
 export function getCommonChoices(

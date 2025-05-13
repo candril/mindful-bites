@@ -1,4 +1,4 @@
-import { getRating } from "@/data/getMealScore";
+import { getRating } from "@/data/getEntryScore";
 import { Trash2 } from "lucide-react";
 import { FunctionComponent } from "react";
 import { Button } from "./ui/button";

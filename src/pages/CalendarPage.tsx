@@ -8,6 +8,7 @@ import { Day } from "../components/CalendarGrid";
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "../components/ui/drawer";
@@ -109,6 +110,8 @@ const CalendarPage: FC = () => {
     return null;
   };
 
+  const definition = definitions?.find((d) => d.id === definitionId);
+
   return (
     <Layout
       title="Calendar"
@@ -139,19 +142,26 @@ const CalendarPage: FC = () => {
         onOpenChange={(open) => !open && reset()}
       >
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
-          <DrawerHeader className="flex flex-row p-0">
-            <DrawerTitle className="flex-1 self-center justify-center text-3xl">
+          <DrawerHeader className="flex p-0">
+            <div className="flex flex-row">
+              <DrawerTitle className="flex-1 self-center justify-center text-3xl">
+                {definition && `New ${definition.name}`}
+              </DrawerTitle>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={reset}
+                className="shadow-none border-none"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+
+            <DrawerDescription>
               {selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}
-            </DrawerTitle>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={reset}
-              className="shadow-none border-none"
-            >
-              <X className="size-4" />
-            </Button>
+            </DrawerDescription>
           </DrawerHeader>
+
           <div className="overflow-auto">{getSheetContent()}</div>
         </DrawerContent>
       </Drawer>

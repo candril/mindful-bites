@@ -1,5 +1,5 @@
 import { FC, ReactNode, useState } from "react";
-import { Header, HeaderMenu } from "./Header";
+import { Header } from "./Header";
 import { BottomNav } from "./BottomNav";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import { X } from "lucide-react";
@@ -7,11 +7,12 @@ import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { useEntries } from "@/data/useStorage";
 import { NewEntryForm } from "@/pages/NewEntryForm";
+import { HeaderMenuProps } from "./HeaderMenu";
 
 export const Layout: FC<{
   children: ReactNode;
   title?: string;
-  menu?: HeaderMenu;
+  menu?: HeaderMenuProps;
   definitionId?: string;
 }> = ({ children, title, menu, definitionId }) => {
   const [isOpen, setIsOpen] = useState(false);

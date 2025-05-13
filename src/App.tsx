@@ -15,7 +15,7 @@ function App() {
         <Route path="/:token" nest>
           <AuthenticatedRoute>
             <Switch>
-              <Route path="/calendar">
+              <Route path="/calendar/:definitionId?">
                 <CalendarPage />
               </Route>
 

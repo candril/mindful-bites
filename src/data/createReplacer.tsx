@@ -20,7 +20,7 @@ export function createReplacer(
           field.choices?.find((c) => c.value === value)?.title ?? "<unknown>"
         );
       case "combo_multi_choice":
-        return (value as string[]).slice(0, 3).join(", ") ?? "Nothing";
+        return value ? (value as string[]).slice(0, 3).join(", ") : "Nothing";
       case "multi_choice":
       case "checkbox":
       case "date":

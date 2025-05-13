@@ -18,11 +18,14 @@ import { toast } from "sonner";
 import { EntryPicker } from "@/components/EntryPicker";
 import { NewEntryForm } from "./NewEntryForm";
 import { getEnryScore } from "@/data/getEntryScore";
+import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
+import { useLocation, useParams } from "wouter";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const [, navigate] = useLocation();
 
   const handleDayClick = (day: Day) => {
     setSelectedDay(day);
@@ -35,9 +38,16 @@ const CalendarPage: FC = () => {
   };
 
   const getDayEntries = (date: Date) =>
-    entries.filter((e) => isSameDay(e.date, date));
+    filteredEntries.filter((e) => isSameDay(e.date, date));
 
+  const definitions = useEntryDefinitions();
+
+  const { definitionId } = useParams();
   const { entries, updateEntry, deleteEntry, createEntry } = useEntries();
+
+  const filteredEntries = !definitionId
+    ? entries
+    : entries.filter((e) => e.definitionId === definitionId);
 
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
 
@@ -77,10 +87,11 @@ const CalendarPage: FC = () => {
       );
     }
 
-    if (selectedDay) {
+    if (selectedDay && definitionId) {
       return (
         <NewEntryForm
           date={selectedDay.date}
+          definitionId={definitionId}
           onSubmit={async (entry) => {
             try {
               reset();
@@ -99,7 +110,19 @@ const CalendarPage: FC = () => {
   };
 
   return (
-    <Layout title="Calendar">
+    <Layout
+      title="Calendar"
+      definitionId={definitionId}
+      menu={{
+        menuItems: [
+          { id: "all", name: "All", description: "Show all entry types" },
+          ...(definitions?.length ? definitions : []),
+        ],
+        selectedMenuItem: definitionId ?? "all",
+        onItemChange: (key) =>
+          key === "all" ? navigate("/calendar") : navigate("/calendar/" + key),
+      }}
+    >
       <Calendar
         className="flex-1"
         startMonth={new Date()}

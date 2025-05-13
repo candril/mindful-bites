@@ -1,5 +1,5 @@
 import { FC, ReactNode, useState } from "react";
-import { Header } from "./Header";
+import { Header, HeaderMenu } from "./Header";
 import { BottomNav } from "./BottomNav";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import { X } from "lucide-react";
@@ -8,16 +8,18 @@ import { toast } from "sonner";
 import { useEntries } from "@/data/useStorage";
 import { NewEntryForm } from "@/pages/NewEntryForm";
 
-export const Layout: FC<{ children: ReactNode; title?: string }> = ({
-  children,
-  title,
-}) => {
+export const Layout: FC<{
+  children: ReactNode;
+  title?: string;
+  menu?: HeaderMenu;
+  definitionId?: string;
+}> = ({ children, title, menu, definitionId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { createEntry } = useEntries();
 
   return (
     <div className="flex flex-col min-h-svh">
-      <Header title={title} />
+      <Header title={title} menu={menu} />
       <main className="flex flex-col flex-1 pb-16">{children}</main>
 
       <Drawer open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
@@ -36,19 +38,22 @@ export const Layout: FC<{ children: ReactNode; title?: string }> = ({
             </Button>
           </DrawerHeader>
           <div className="overflow-auto">
-            <NewEntryForm
-              date={new Date()}
-              onSubmit={async (entry) => {
-                try {
-                  setIsOpen(false);
-                  await createEntry(entry);
-                  return true;
-                } catch {
-                  toast.error("Ooops, the entry could not be stored");
-                  return false;
-                }
-              }}
-            />
+            {definitionId && (
+              <NewEntryForm
+                definitionId={definitionId}
+                date={new Date()}
+                onSubmit={async (entry) => {
+                  try {
+                    setIsOpen(false);
+                    await createEntry(entry);
+                    return true;
+                  } catch {
+                    toast.error("Ooops, the entry could not be stored");
+                    return false;
+                  }
+                }}
+              />
+            )}
           </div>
         </DrawerContent>
       </Drawer>

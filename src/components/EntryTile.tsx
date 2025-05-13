@@ -16,8 +16,12 @@ export const EntryTile: FunctionComponent<{
 }> = ({ entry, onClick, onDeleteClick }) => {
   const textReplacer = createReplacer(entry.definition, entry.data);
   const numberReplacer = createNumberReplacer(entry.definition, entry.data);
-  const title = evaluate(entry.definition.titleTemplate, textReplacer);
-  const subTitle = evaluate(entry.definition.subtitleTemplate, textReplacer);
+  const title = entry.definition.titleTemplate
+    ? evaluate(entry.definition.titleTemplate, textReplacer)
+    : entry.definition.name;
+  const subTitle = entry.definition.subtitleTemplate
+    ? evaluate(entry.definition.subtitleTemplate, textReplacer)
+    : null;
 
   const expr = new ExpressionParser(
     entry.definition.parsedRatingExpression,

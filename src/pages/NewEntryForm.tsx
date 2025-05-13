@@ -4,16 +4,15 @@ import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { Entry } from "@/data/useStorage";
 import { FC } from "react";
 
-const MEAL_DEFINITION = "26386876-5fd6-4a2d-8d03-064ddb3fd909";
-
 export const NewEntryForm: FC<{
   date: Date;
+  definitionId: string;
   onSubmit: (data: Entry) => Promise<boolean>;
-}> = ({ date, onSubmit }) => {
+}> = ({ date, definitionId, onSubmit }) => {
   const token = useToken();
   const definitions = useEntryDefinitions();
 
-  const definition = definitions?.find((d) => d.id === MEAL_DEFINITION);
+  const definition = definitions?.find((d) => d.id === definitionId);
   const fields = definition?.fields;
 
   if (!definition || !fields || fields.length < 1) {
@@ -31,7 +30,7 @@ export const NewEntryForm: FC<{
         id: crypto.randomUUID(),
         data: initialData,
         date: date.toISOString(),
-        definitionId: MEAL_DEFINITION,
+        definitionId,
         definition,
         userToken: token,
       }}

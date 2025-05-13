@@ -3,7 +3,9 @@ import { EntryForm } from "@/components/form/EntryForm";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { Entry } from "@/data/useStorage";
 import { FC } from "react";
+
 const MEAL_DEFINITION = "26386876-5fd6-4a2d-8d03-064ddb3fd909";
+
 export const NewEntryForm: FC<{
   date: Date;
   onSubmit: (data: Entry) => Promise<boolean>;
@@ -33,7 +35,6 @@ export const NewEntryForm: FC<{
         definition,
         userToken: token,
       }}
-      // commonComponents={commonComponents}
       onSubmit={onSubmit}
     />
   );

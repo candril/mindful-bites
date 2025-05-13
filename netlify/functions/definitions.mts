@@ -1,7 +1,7 @@
 import { Config, Context } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
 import { snakeToCamel } from "../../src/lib/utils";
-import { EntryDefinition } from "../../src/components/form/useFieldDefinitions";
+import { EntryDefinition } from "../../src/data/EntryDefinition";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
@@ -123,7 +123,9 @@ export default async (req: Request, context: Context) => {
   }
 };
 
-function mapToEntry(dbEntry: any): EntryDefinition {
+function mapToEntry(
+  dbEntry: any,
+): Omit<EntryDefinition, "parsedRatingExpression"> {
   return {
     id: dbEntry.id,
     name: dbEntry.name,

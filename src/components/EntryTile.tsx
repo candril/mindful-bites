@@ -5,63 +5,9 @@ import { Button } from "./ui/button";
 import { Dot } from "./Dot";
 import { Entry } from "@/data/useStorage";
 import { evaluate } from "@/lib/templates";
-import { EntryDefinition } from "./form/useFieldDefinitions";
-import { snakeToCamel } from "@/lib/utils";
 import { ExpressionParser } from "@/lib/expressions";
-
-function createNumberReplacer(
-  definition: EntryDefinition,
-  data: Record<string, unknown>,
-) {
-  return (key: string) => {
-    const fieldName = snakeToCamel(key);
-    const value = data[fieldName];
-    const field = definition.fields.find((f) => f.name === fieldName);
-
-    if (!field) {
-      return 0;
-    }
-
-    switch (field.type) {
-      case "choice":
-        return field.choices?.find((c) => c.value === value)?.modifier ?? 0;
-      case "combo_multi_choice":
-      case "multi_choice":
-      case "checkbox":
-      case "date":
-      case "text":
-        return 0;
-    }
-  };
-}
-function createReplacer(
-  definition: EntryDefinition,
-  data: Record<string, unknown>,
-): (key: string) => unknown {
-  return (key: string) => {
-    const fieldName = snakeToCamel(key);
-    const value = data[fieldName];
-    const field = definition.fields.find((f) => f.name === fieldName);
-
-    if (!field) {
-      return key;
-    }
-
-    switch (field.type) {
-      case "choice":
-        return (
-          field.choices?.find((c) => c.value === value)?.title ?? "<unknown>"
-        );
-      case "combo_multi_choice":
-        return (value as string[]).slice(0, 3).join(", ") ?? "Nothing";
-      case "multi_choice":
-      case "checkbox":
-      case "date":
-      case "text":
-        return value;
-    }
-  };
-}
+import { createNumberReplacer } from "@/data/createNumberReplacer";
+import { createReplacer } from "@/data/createReplacer";
 
 export const EntryTile: FunctionComponent<{
   entry: Entry;

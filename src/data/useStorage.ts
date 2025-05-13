@@ -1,10 +1,8 @@
 import { useCallback } from "react";
 import { useData } from "./useData";
 import { useToken } from "@/components/AuthenticationContext";
-import {
-  EntryDefinition,
-  useEntryDefinitions,
-} from "@/components/form/useFieldDefinitions";
+import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
+import { EntryDefinition } from "./EntryDefinition";
 
 export type Entry = {
   id: string;

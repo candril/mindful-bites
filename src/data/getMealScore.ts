@@ -1,3 +1,4 @@
+import { ExpressionParser } from "@/lib/expressions";
 import { RatingColor } from "../components/Dot";
 import { Entry } from "./useStorage";
 
@@ -18,6 +19,49 @@ const colorCoding: RatingColor[] = [
 ];
 
 export function getRating(score: number): RatingColor {
+  if (score <= 0) {
+    return "bad";
+  } else if (score >= colorCoding.length) {
+    return "excellent";
+  } else {
+    return colorCoding[score];
+  }
+}
+
+export function getEnryScore(entry: Entry): RatingColor {
+
+new ExpressionParser(entry.definition.parsedRatingExpression, 
+
+
+
+  let score = 3;
+
+  switch (entry.data.portionSize) {
+    case "large":
+      score -= 1;
+      break;
+    case "small":
+      score += 1;
+      break;
+  }
+
+  switch (entry.data.healthRating) {
+    case "very-unhealthy":
+      score -= 2;
+      break;
+    case "unhealthy":
+      score -= 1;
+      break;
+    case "neutral":
+      break;
+    case "healthy":
+      score += 1;
+      break;
+    case "very-healthy":
+      score += 2;
+      break;
+  }
+
   if (score <= 0) {
     return "bad";
   } else if (score >= colorCoding.length) {

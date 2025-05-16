@@ -14,7 +14,8 @@ export type FieldType =
   | "date"
   | "choice"
   | "multi_choice"
-  | "combo_multi_choice";
+  | "combo_multi_choice"
+  | "boolean";
 
 export type FieldDefinition = {
   id: string;

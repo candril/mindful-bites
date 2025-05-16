@@ -7,6 +7,8 @@ import { useFieldDefinitions } from "./useFieldDefinitions";
 import { ComponentPicker } from "./ComponentPicker";
 import { getCommonChoices } from "@/data/getCommonChoices";
 import { FieldDefinition, FieldType } from "@/data/EntryDefinition";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 
 const NoopField: FC = () => {
   return <div>N/A</div>;
@@ -24,6 +26,19 @@ const ChoiceField: FC<FieldProps> = ({ definition, value, onChange }) => {
       options={options}
       value={value as string}
     />
+  );
+};
+
+const BooleanField: FC<FieldProps> = ({ value, definition, onChange }) => {
+  return (
+    <>
+      <Switch
+        id={definition.id}
+        checked={value as boolean}
+        onCheckedChange={onChange}
+      />
+      <Label htmlFor={definition.id}>{definition.description}</Label>
+    </>
   );
 };
 
@@ -79,6 +94,8 @@ function getFieldComponent(type: FieldType): ComponentType<FieldProps> {
     case "text":
     case "checkbox":
     case "date":
+    case "boolean":
+      return BooleanField;
     case "multi_choice":
       return NoopField;
   }

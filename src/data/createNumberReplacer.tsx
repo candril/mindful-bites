@@ -17,6 +17,8 @@ export function createNumberReplacer(
     switch (field.type) {
       case "choice":
         return field.choices?.find((c) => c.value === value)?.modifier ?? 0;
+      case "boolean":
+        return value ? 1 : 0;
       case "combo_multi_choice":
       case "multi_choice":
       case "checkbox":

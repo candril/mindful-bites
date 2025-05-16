@@ -115,7 +115,6 @@ const CalendarPage: FC = () => {
   return (
     <Layout
       title="Calendar"
-      definitionId={definitionId}
       menu={{
         menuItems: [
           { id: "all", name: "All", description: "Show all entry types" },

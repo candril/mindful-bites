@@ -8,22 +8,32 @@ import { toast } from "sonner";
 import { useEntries } from "@/data/useStorage";
 import { NewEntryForm } from "@/pages/NewEntryForm";
 import { HeaderMenuProps } from "./HeaderMenu";
+import { useEntryDefinitions } from "./form/useFieldDefinitions";
 
 export const Layout: FC<{
   children: ReactNode;
   title?: string;
   menu?: HeaderMenuProps;
-  definitionId?: string;
-}> = ({ children, title, menu, definitionId }) => {
+}> = ({ children, title, menu }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { createEntry } = useEntries();
+
+  const definitions = useEntryDefinitions();
+  const [selectedDefinition, setSelectedDefinition] = useState<string | null>(
+    null,
+  );
+
+  function reset() {
+    setIsOpen(false);
+    setSelectedDefinition(null);
+  }
 
   return (
     <div className="flex flex-col min-h-svh">
       <Header title={title} menu={menu} />
       <main className="flex flex-col flex-1 pb-16">{children}</main>
 
-      <Drawer open={isOpen} onOpenChange={(open) => !open && setIsOpen(false)}>
+      <Drawer open={isOpen} onOpenChange={(open) => !open && reset()}>
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
           <DrawerHeader className="flex flex-row p-0">
             <DrawerTitle className="flex-1 self-center justify-center text-3xl">
@@ -32,20 +42,38 @@ export const Layout: FC<{
             <Button
               size="icon"
               variant="outline"
-              onClick={() => setIsOpen(false)}
+              onClick={reset}
               className="shadow-none border-none"
             >
               <X className="size-4" />
             </Button>
           </DrawerHeader>
           <div className="overflow-auto">
-            {definitionId && (
+            {!selectedDefinition &&
+              definitions?.map((d) => (
+                <div
+                  key={d.id}
+                  role="button"
+                  className="p-4 mb-3 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white cursor-pointer"
+                  onClick={() => setSelectedDefinition(d.id)}
+                >
+                  <h3 className="text-lg font-semibold">{d.name}</h3>
+                  {d.description && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      {d.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+
+            {selectedDefinition && (
               <NewEntryForm
-                definitionId={definitionId}
+                definitionId={selectedDefinition}
                 date={new Date()}
                 onSubmit={async (entry) => {
                   try {
                     setIsOpen(false);
+                    setSelectedDefinition(null);
                     await createEntry(entry);
                     return true;
                   } catch {

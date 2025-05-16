@@ -49,7 +49,6 @@ export const HeaderMenu: FC<HeaderMenuProps> = ({
           "flex justify-end items-center w-full p-3 gap-2",
           "bg-white hover:bg-gray-50",
           "transition-all duration-200 ease-in-out",
-          isOpen && "bg-gray-50",
         )}
         aria-expanded={isOpen}
         aria-haspopup="true"

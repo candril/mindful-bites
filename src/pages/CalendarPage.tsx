@@ -43,8 +43,13 @@ const CalendarPage: FC = () => {
 
   const definitions = useEntryDefinitions();
 
-  const { definitionId } = useParams();
+  const { definitionId: definitionIdFromParams } = useParams();
   const { entries, updateEntry, deleteEntry, createEntry } = useEntries();
+
+  const definitionCount = definitions?.length ?? 0;
+
+  const definitionId =
+    definitionCount === 1 ? definitions?.[0].id : definitionIdFromParams;
 
   const filteredEntries = !definitionId
     ? entries

@@ -19,7 +19,7 @@ export const Layout: FC<{
   const { createEntry } = useEntries();
 
   const definitions = useEntryDefinitions();
-  const [selectedDefinition, setSelectedDefinition] = useState<string | null>(
+  const [selectedDefinitionId, setSelectedDefinition] = useState<string | null>(
     null,
   );
 
@@ -28,9 +28,14 @@ export const Layout: FC<{
     setSelectedDefinition(null);
   }
 
+  const definitionCount = definitions?.length ?? 0;
+
+  const definitionId =
+    definitionCount === 1 ? definitions?.[0].id : selectedDefinitionId;
+
   return (
     <div className="flex flex-col min-h-svh">
-      <Header title={title} menu={menu} />
+      <Header title={title} menu={definitionCount > 1 ? menu : undefined} />
       <main className="flex flex-col flex-1 pb-16">{children}</main>
 
       <Drawer open={isOpen} onOpenChange={(open) => !open && reset()}>
@@ -49,7 +54,7 @@ export const Layout: FC<{
             </Button>
           </DrawerHeader>
           <div className="overflow-auto">
-            {!selectedDefinition &&
+            {!definitionId &&
               definitions?.map((d) => (
                 <div
                   key={d.id}
@@ -66,9 +71,9 @@ export const Layout: FC<{
                 </div>
               ))}
 
-            {selectedDefinition && (
+            {definitionId && (
               <NewEntryForm
-                definitionId={selectedDefinition}
+                definitionId={definitionId}
                 date={new Date()}
                 onSubmit={async (entry) => {
                   try {

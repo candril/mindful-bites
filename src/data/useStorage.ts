@@ -1,9 +1,20 @@
 import { useCallback } from "react";
-import { MealEntry } from "./meals";
 import { useData } from "./useData";
+import { useToken } from "@/components/AuthenticationContext";
+import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
+import { EntryDefinition } from "./EntryDefinition";
+
+export type Entry = {
+  id: string;
+  date: string;
+  data: Record<string, unknown>;
+  definitionId: string;
+  definition: EntryDefinition;
+  userToken: string;
+};
 
 async function deleteEntryRemote(id: string, token: string) {
-  const res = await fetch(`/api/users/${token}/bites/${id}`, {
+  const res = await fetch(`/api/users/${token}/entries/${id}`, {
     method: "DELETE",
   });
 
@@ -13,10 +24,10 @@ async function deleteEntryRemote(id: string, token: string) {
 
   throw new Error(res.statusText);
 }
-async function updateEntryRemote(entry: MealEntry, user_token: string) {
-  const res = await fetch(`/api/users/${user_token}/bites/${entry.id}`, {
+async function updateEntryRemote(entry: Entry, userToken: string) {
+  const res = await fetch(`/api/users/${userToken}/entries/${entry.id}`, {
     method: "PUT",
-    body: JSON.stringify({ ...entry, user_token }),
+    body: JSON.stringify({ ...entry, userToken, definition: undefined }),
   });
 
   if (res.ok) {
@@ -26,10 +37,10 @@ async function updateEntryRemote(entry: MealEntry, user_token: string) {
   throw new Error(res.statusText);
 }
 
-async function createEntryRemote(entry: MealEntry, userToken: string) {
-  const res = await fetch(`/api/users/${userToken}/bites`, {
+async function createEntryRemote(entry: Entry, userToken: string) {
+  const res = await fetch(`/api/users/${userToken}/entries`, {
     method: "POST",
-    body: JSON.stringify({ ...entry, userToken }),
+    body: JSON.stringify({ ...entry, userToken, definition: undefined }),
   });
 
   if (res.ok) {
@@ -39,13 +50,31 @@ async function createEntryRemote(entry: MealEntry, userToken: string) {
   throw new Error(res.statusText);
 }
 
-export function useMeals(token: string) {
-  const { data, mutate } = useData<MealEntry[]>(`/api/users/${token}/bites`);
+export function useEntries() {
+  const token = useToken();
+  const { data, mutate } = useData<Entry[]>(`/api/users/${token}/entries`);
+  const definitions = useEntryDefinitions();
 
-  const entries = data ?? [];
+  const definitionMap = new Map<string, EntryDefinition>(
+    definitions?.map((d) => [d.id, d]) ?? [],
+  );
+
+  const entries = definitions
+    ? (data?.map((e) => {
+        const definition = definitionMap.get(e.definitionId);
+        if (!definition) {
+          throw new Error(`Missing defintion with ID '${e.definitionId}'`);
+        }
+
+        return {
+          ...e,
+          definition,
+        };
+      }) ?? [])
+    : [];
 
   const createEntry = useCallback(
-    async (entry: MealEntry) => {
+    async (entry: Entry) => {
       mutate([...entries, entry]);
       try {
         await createEntryRemote(entry, token);
@@ -58,7 +87,7 @@ export function useMeals(token: string) {
   );
 
   const updateEntry = useCallback(
-    async (updatedEntry: MealEntry) => {
+    async (updatedEntry: Entry) => {
       mutate(
         entries.map((entry) =>
           entry.id === updatedEntry.id ? updatedEntry : entry,

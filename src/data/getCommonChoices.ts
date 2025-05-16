@@ -1,7 +1,14 @@
-import { MealEntry } from "../data/meals";
+import { FieldDefinition } from "./EntryDefinition";
+import { Entry } from "./useStorage";
 
-export function getCommonComponents(allEntries: MealEntry[]): string[] {
-  const allComponents = allEntries?.map((e) => e.components).flat(1);
+export function getCommonChoices(
+  field: FieldDefinition,
+  allEntries: Entry[],
+): string[] {
+  const allComponents = allEntries
+    ?.map((e) => e.data[field.name] as string[])
+    .flat(1);
+
   if (allComponents?.length === 0) {
     return ["Pizza", "Salat"];
   }
@@ -19,5 +26,5 @@ export function getCommonComponents(allEntries: MealEntry[]): string[] {
       }, new Map<string, number>())
       ?.entries() ?? [];
 
-  return [...map].sort(([_, a], [__, b]) => b - a).map(([c]) => c);
+  return [...map].sort(([, a], [, b]) => b - a).map(([c]) => c);
 }

@@ -1,28 +1,28 @@
-import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
-import { useMeals } from "@/data/useStorage";
 import { FC, ReactNode, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useEntries } from "@/data/useStorage";
 
-const MealStatsPage: FC = () => {
-  const token = useToken();
-  const { entries } = useMeals(token);
+const StatisticsPage: FC = () => {
+  const { entries } = useEntries();
 
   const mealStats = useMemo(() => {
     if (!entries?.length) return null;
 
     const totalMeals = entries.length;
-    const tooMuch = entries.filter((e) => e.portionSize === "large").length;
+    const tooMuch = entries.filter(
+      (e) => e.data.portionSize === "large",
+    ).length;
     const superHealthy = entries.filter(
-      (e) => e.healthRating === "very-healthy",
+      (e) => e.data.healthRating === "very-healthy",
     ).length;
 
     const mealTypes = {
-      breakfast: entries.filter((e) => e.mealType === "breakfast").length,
-      lunch: entries.filter((e) => e.mealType === "lunch").length,
-      dinner: entries.filter((e) => e.mealType === "dinner").length,
-      snack: entries.filter((e) => e.mealType === "snack").length,
+      breakfast: entries.filter((e) => e.data.mealType === "breakfast").length,
+      lunch: entries.filter((e) => e.data.mealType === "lunch").length,
+      dinner: entries.filter((e) => e.data.mealType === "dinner").length,
+      snack: entries.filter((e) => e.data.mealType === "snack").length,
     };
 
     const sortedDates = [
@@ -59,7 +59,9 @@ const MealStatsPage: FC = () => {
   }, [entries]);
 
   const componentStats = useMemo(() => {
-    const allComponents = entries?.map((e) => e.components).flat(1);
+    const allComponents = entries
+      ?.map((e) => e.data.components as string[])
+      .flat(1);
     const componentCount = new Map<string, number>();
 
     allComponents?.forEach((component) => {
@@ -82,9 +84,11 @@ const MealStatsPage: FC = () => {
     const combinationCount = new Map<string, number>();
 
     entries?.forEach((entry) => {
-      if (entry.components?.length > 1) {
+      if ((entry.data.components as string[])?.length > 1) {
         // Sort components to ensure consistent keys
-        const combinationKey = [...entry.components].sort().join(", ");
+        const combinationKey = [...(entry.data.components as string)]
+          .sort()
+          .join(", ");
         combinationCount.set(
           combinationKey,
           (combinationCount.get(combinationKey) || 0) + 1,
@@ -189,7 +193,7 @@ const MealStatsPage: FC = () => {
   );
 };
 
-export default MealStatsPage;
+export default StatisticsPage;
 
 interface StatCardProps {
   title: string;

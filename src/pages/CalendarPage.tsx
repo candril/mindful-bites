@@ -1,34 +1,32 @@
 import { format, isSameDay } from "date-fns";
 import { Calendar } from "../components/Calendar";
-import { useMeals } from "../data/useStorage";
+import { Entry, useEntries } from "../data/useStorage";
 import { FC, useState } from "react";
-import { getMealScore } from "../data/getMealScore";
 import { Dot } from "../components/Dot";
-import { getCommonComponents } from "../data/getCommonComponents";
-import { MealForm } from "../components/MealForm";
-import { MealPicker } from "../components/MealPicker";
+import { EntryForm } from "../components/form/EntryForm";
 import { Day } from "../components/CalendarGrid";
-import { MealEntry } from "../data/meals";
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
   DrawerTitle,
 } from "../components/ui/drawer";
 import { Button } from "../components/ui/button";
 import { X } from "lucide-react";
-import { useToken } from "@/components/AuthenticationContext";
 import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
+import { EntryPicker } from "@/components/EntryPicker";
+import { NewEntryForm } from "./NewEntryForm";
+import { getEnryScore } from "@/data/getEntryScore";
+import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
+import { useLocation, useParams } from "wouter";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
-  const [selectedMealEnty, setSelectedMealEntry] = useState<MealEntry | null>(
-    null,
-  );
-
-  const token = useToken();
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const [, navigate] = useLocation();
 
   const handleDayClick = (day: Day) => {
     setSelectedDay(day);
@@ -37,32 +35,40 @@ const CalendarPage: FC = () => {
   const reset = () => {
     setShowEntryPicker(true);
     setSelectedDay(null);
-    setSelectedMealEntry(null);
+    setSelectedEntry(null);
   };
 
   const getDayEntries = (date: Date) =>
-    entries.filter((e) => isSameDay(e.date, date));
+    filteredEntries.filter((e) => isSameDay(e.date, date));
 
-  const { entries, updateEntry, deleteEntry, createEntry } = useMeals(token);
+  const definitions = useEntryDefinitions();
+
+  const { definitionId: definitionIdFromParams } = useParams();
+  const { entries, updateEntry, deleteEntry, createEntry } = useEntries();
+
+  const definitionCount = definitions?.length ?? 0;
+
+  const definitionId =
+    definitionCount === 1 ? definitions?.[0].id : definitionIdFromParams;
+
+  const filteredEntries = !definitionId
+    ? entries
+    : entries.filter((e) => e.definitionId === definitionId);
 
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
 
   const getSheetContent = () => {
-    const commonComponents = getCommonComponents(entries);
-    if (selectedMealEnty) {
+    if (selectedEntry) {
       return (
-        <MealForm
-          entry={selectedMealEnty}
-          commonComponents={commonComponents}
-          date={new Date(selectedMealEnty.date)}
-          onSubmit={async (entry) => {
+        <EntryForm
+          entry={selectedEntry}
+          onSubmit={async (entry: Entry) => {
             try {
               reset();
               await updateEntry(entry);
               return true;
-            } catch (error) {
-              console.error("##", error);
-              toast.error("Oops, meal could not be stored!");
+            } catch {
+              toast.error("Oops, entry could not be stored!");
               return false;
             }
           }}
@@ -72,34 +78,33 @@ const CalendarPage: FC = () => {
 
     if (dayEntries.length && showEntryPicker) {
       return (
-        <MealPicker
-          meals={dayEntries}
+        <EntryPicker
+          entries={dayEntries}
           onAddClick={() => setShowEntryPicker(false)}
-          onEntryClick={(entry) => setSelectedMealEntry(entry)}
+          onEntryClick={(entry) => setSelectedEntry(entry)}
           onRemoveClick={async (entry) => {
             try {
               await deleteEntry(entry.id);
             } catch {
-              toast.error("Ooops, could not delete the meal");
+              toast.error("Ooops, could not delete the entry");
             }
           }}
         />
       );
     }
 
-    if (selectedDay) {
+    if (selectedDay && definitionId) {
       return (
-        <MealForm
+        <NewEntryForm
           date={selectedDay.date}
-          commonComponents={commonComponents}
+          definitionId={definitionId}
           onSubmit={async (entry) => {
             try {
               reset();
               await createEntry(entry);
               return true;
-            } catch (error) {
-              console.error("##", error);
-              toast.error("Oops, meal could not be stored!");
+            } catch {
+              toast.error("Oops, entry could not be stored!");
               return false;
             }
           }}
@@ -110,15 +115,28 @@ const CalendarPage: FC = () => {
     return null;
   };
 
+  const definition = definitions?.find((d) => d.id === definitionId);
+
   return (
-    <Layout title="Calendar">
+    <Layout
+      title="Calendar"
+      menu={{
+        menuItems: [
+          { id: "all", name: "All", description: "Show all entry types" },
+          ...(definitions?.length ? definitions : []),
+        ],
+        selectedMenuItem: definitionId ?? "all",
+        onItemChange: (key) =>
+          key === "all" ? navigate("/calendar") : navigate("/calendar/" + key),
+      }}
+    >
       <Calendar
         className="flex-1"
         startMonth={new Date()}
         onDayClick={handleDayClick}
         additionalContent={(day) =>
-          getDayEntries(day.date).map((m) => (
-            <Dot key={m.id} rating={getMealScore(m)} />
+          getDayEntries(day.date).map((entry) => (
+            <Dot key={entry.id} rating={getEnryScore(entry)} />
           ))
         }
       />
@@ -128,19 +146,26 @@ const CalendarPage: FC = () => {
         onOpenChange={(open) => !open && reset()}
       >
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
-          <DrawerHeader className="flex flex-row p-0">
-            <DrawerTitle className="flex-1 self-center justify-center text-3xl">
+          <DrawerHeader className="flex p-0">
+            <div className="flex flex-row">
+              <DrawerTitle className="flex-1 self-center justify-center text-3xl">
+                {definition && `New ${definition.name}`}
+              </DrawerTitle>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={reset}
+                className="shadow-none border-none"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+
+            <DrawerDescription>
               {selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}
-            </DrawerTitle>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={reset}
-              className="shadow-none border-none"
-            >
-              <X className="size-4" />
-            </Button>
+            </DrawerDescription>
           </DrawerHeader>
+
           <div className="overflow-auto">{getSheetContent()}</div>
         </DrawerContent>
       </Drawer>

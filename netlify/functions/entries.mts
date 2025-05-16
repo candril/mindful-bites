@@ -1,31 +1,12 @@
 import { Config, Context } from "@netlify/functions";
 import { createClient } from "@supabase/supabase-js";
-
-type MealType = "breakfast" | "lunch" | "dinner" | "snack";
-
-type HealthRating =
-  | "very-unhealthy"
-  | "unhealthy"
-  | "neutral"
-  | "healthy"
-  | "very-healthy";
-
-type PortionSize = "small" | "just-right" | "large";
-
-type MealEntry = {
-  id: string;
-  date: string;
-  components: string[];
-  healthRating: HealthRating;
-  portionSize: PortionSize;
-  mealType: MealType;
-  userToken?: string;
-};
+import { Entry } from "../../src/data/useStorage";
+import { camelToSnake, snakeToCamel } from "../../src/lib/utils";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-const MEAL_ENTRIES_TABLE_NAME = "meal_entries_v2";
+const ENTRIES_TABLE_NAME = "meal_entries_v2";
 
 const _supabase =
   supabaseUrl && supabaseKey && createClient(supabaseUrl, supabaseKey);
@@ -38,9 +19,9 @@ function getClient() {
   throw new Error("Missing supabase config");
 }
 
-async function updateBite(req: Request, context: Context) {
-  const mealEntry: MealEntry = await req.json();
-  if (!mealEntry.id || !mealEntry.date || !mealEntry.mealType) {
+async function updateEntry(req: Request, context: Context) {
+  const entry: Entry = await req.json();
+  if (!entry.data || !entry.definitionId || !entry.userToken) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -48,7 +29,7 @@ async function updateBite(req: Request, context: Context) {
   }
 
   const { id, token } = context.params;
-  if (mealEntry.userToken !== token) {
+  if (entry.userToken !== token) {
     return new Response(JSON.stringify({ error: "User token mismatch" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -58,16 +39,11 @@ async function updateBite(req: Request, context: Context) {
   const supabase = getClient();
 
   const { error } = await supabase
-    .from(MEAL_ENTRIES_TABLE_NAME)
+    .from(ENTRIES_TABLE_NAME)
     .update({
-      date: new Date(mealEntry.date).toISOString(),
-      user_token: mealEntry.userToken,
-      data: {
-        components: mealEntry.components,
-        health_rating: mealEntry.healthRating,
-        portion_size: mealEntry.portionSize,
-        meal_type: mealEntry.mealType,
-      },
+      date: new Date(entry.date).toISOString(),
+      user_token: entry.userToken,
+      data: mapToDbData(entry.data),
     })
     .eq("id", id)
     .eq("user_token", token);
@@ -86,13 +62,13 @@ async function updateBite(req: Request, context: Context) {
   });
 }
 
-async function getBites(context: Context) {
+async function getEntries(context: Context) {
   const supabase = getClient();
 
   const { token } = context.params;
 
   const { data, error } = await supabase
-    .from(MEAL_ENTRIES_TABLE_NAME)
+    .from(ENTRIES_TABLE_NAME)
     .select("*")
     .eq("user_token", token);
 
@@ -100,20 +76,38 @@ async function getBites(context: Context) {
     throw new Error("Failed to load bites");
   }
 
-  const mappedData = data.map((entry: any) => ({
+  const mappedEntry = data.map((entry: any) => ({
     id: entry.id,
+    definitionId: entry.definition_id,
     date: new Date(entry.date).toISOString(),
     userToken: entry.user_token,
-    components: entry.data.components,
-    healthRating: entry.data.health_rating,
-    portionSize: entry.data.portion_size,
-    mealType: entry.data.meal_type,
+    data: mapFromDbData(entry.data),
   }));
 
-  return new Response(JSON.stringify(mappedData), { status: 200 });
+  return new Response(JSON.stringify(mappedEntry), { status: 200 });
 }
 
-async function deleteBite(context: Context) {
+function mapToDbData(data: Record<string, unknown>) {
+  return Object.keys(data).reduce<Record<string, unknown>>(
+    (current, next) => ({
+      ...current,
+      [camelToSnake(next)]: data[next],
+    }),
+    {},
+  );
+}
+
+function mapFromDbData(data: Record<string, unknown>) {
+  return Object.keys(data).reduce<Record<string, unknown>>(
+    (current, next) => ({
+      ...current,
+      [snakeToCamel(next)]: data[next],
+    }),
+    {},
+  );
+}
+
+async function deleteEntry(context: Context) {
   const { id, token } = context.params;
 
   if (!id || !token) {
@@ -121,7 +115,7 @@ async function deleteBite(context: Context) {
   }
   const supabase = getClient();
   const { error } = await supabase
-    .from(MEAL_ENTRIES_TABLE_NAME) // Replace 'bites' with your table name
+    .from(ENTRIES_TABLE_NAME) // Replace 'bites' with your table name
     .delete()
     .eq("id", id)
     .eq("user_token", token);
@@ -134,9 +128,9 @@ async function deleteBite(context: Context) {
   return new Response(null, { status: 204 });
 }
 
-async function createBite(req: Request) {
-  const mealEntry: MealEntry = await req.json();
-  if (!mealEntry.id || !mealEntry.date || !mealEntry.mealType) {
+async function createEntry(req: Request) {
+  const entry: Entry = await req.json();
+  if (!entry.id || !entry.date || !entry.data) {
     return new Response(JSON.stringify({ error: "Missing required fields" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
@@ -145,17 +139,13 @@ async function createBite(req: Request) {
 
   const supabase = getClient();
 
-  const { data, error } = await supabase.from(MEAL_ENTRIES_TABLE_NAME).insert([
+  const { data, error } = await supabase.from(ENTRIES_TABLE_NAME).insert([
     {
-      id: mealEntry.id,
-      date: new Date(mealEntry.date).toISOString(),
-      user_token: mealEntry.userToken,
-      data: {
-        components: mealEntry.components,
-        health_rating: mealEntry.healthRating,
-        portion_size: mealEntry.portionSize,
-        meal_type: mealEntry.mealType,
-      },
+      id: entry.id,
+      definition_id: entry.definitionId,
+      date: new Date(entry.date).toISOString(),
+      user_token: entry.userToken,
+      data: mapToDbData(entry.data),
     },
   ]);
 
@@ -188,13 +178,13 @@ export default async (req: Request, context: Context) => {
   try {
     switch (req.method) {
       case "PUT":
-        updateBite(req, context);
+        updateEntry(req, context);
       case "GET":
-        return getBites(context);
+        return getEntries(context);
       case "POST":
-        return createBite(req);
+        return createEntry(req);
       case "DELETE":
-        return deleteBite(context);
+        return deleteEntry(context);
       default:
         return new Response("Not found", {
           status: 404,
@@ -213,5 +203,5 @@ export default async (req: Request, context: Context) => {
 };
 
 export const config: Config = {
-  path: ["/api/users/:token/bites", "/api/users/:token/bites/:id"],
+  path: ["/api/users/:token/entries", "/api/users/:token/entries/:id"],
 };

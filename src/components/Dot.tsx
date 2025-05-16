@@ -1,4 +1,4 @@
-import { ratingColorMap } from "@/data/getMealScore";
+import { ratingColorMap } from "@/data/getEntryScore";
 import { FC } from "react";
 
 export type RatingColor = "bad" | "poor" | "average" | "good" | "excellent";

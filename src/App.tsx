@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from "wouter";
 import WelcomePage from "./pages/Welcome";
 import AgendaPage from "./pages/AgendaPage";
 import { AuthenticatedRoute } from "./WithUser";
-import MealStatsPage from "./pages/MealStatsPage";
+import StatisticsPage from "./pages/StatisticsPage";
 import AboutPage from "./pages/AboutPage";
 import { Toaster } from "./components/ui/sonner";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -15,7 +15,7 @@ function App() {
         <Route path="/:token" nest>
           <AuthenticatedRoute>
             <Switch>
-              <Route path="/calendar">
+              <Route path="/calendar/:definitionId?">
                 <CalendarPage />
               </Route>
 
@@ -24,7 +24,7 @@ function App() {
               </Route>
 
               <Route path="/stats">
-                <MealStatsPage />
+                <StatisticsPage />
               </Route>
 
               <Route path="/about">

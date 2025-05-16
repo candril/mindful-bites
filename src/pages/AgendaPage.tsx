@@ -1,29 +1,23 @@
-import { useMeals } from "../data/useStorage";
 import { FC, useState } from "react";
-import { MealTile } from "@/components/MealTile";
-import { MEAL_TYPE_MAP, MealEntry } from "@/data/meals";
+import { EntryTile } from "@/components/EntryTile";
 import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
-import { useToken } from "@/components/AuthenticationContext";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { MealForm } from "@/components/MealForm";
+import { EntryForm } from "@/components/form/EntryForm";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
-import { getCommonComponents } from "@/data/getCommonComponents";
+import { Entry, useEntries } from "@/data/useStorage";
 
 const AgendaPage: FC = () => {
-  const token = useToken();
-  const { entries, updateEntry } = useMeals(token);
+  const { entries, updateEntry } = useEntries();
 
-  const commonComponents = getCommonComponents(entries);
-
-  const [selectedMeal, setSelectedMeal] = useState<MealEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
 
   const entriesByYearMonthDay = groupByYearMonthDay(entries);
 
@@ -65,16 +59,17 @@ const AgendaPage: FC = () => {
                   </h3>
                   <div className="space-y-3">
                     {daysInMonth[day]
-                      .sort(
-                        (a, b) =>
-                          MEAL_TYPE_MAP[a.mealType].order -
-                          MEAL_TYPE_MAP[b.mealType].order,
-                      )
-                      .map((meal) => (
-                        <MealTile
-                          key={meal.id}
-                          meal={meal}
-                          onClick={() => setSelectedMeal(meal)}
+                      // TODO: sort by choice item order...
+                      // .sort(
+                      //   (a, b) =>
+                      //     MEAL_TYPE_MAP[a.data.mealType as MealType].order -
+                      //     MEAL_TYPE_MAP[b.data.mealType as MealType].order,
+                      // )
+                      .map((entry) => (
+                        <EntryTile
+                          key={entry.id}
+                          entry={entry}
+                          onClick={() => setSelectedEntry(entry)}
                         />
                       ))}
                   </div>
@@ -86,36 +81,34 @@ const AgendaPage: FC = () => {
       })}
 
       <Drawer
-        open={selectedMeal != null}
-        onOpenChange={(open) => !open && setSelectedMeal(null)}
+        open={selectedEntry != null}
+        onOpenChange={(open) => !open && setSelectedEntry(null)}
       >
         <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
           <DrawerHeader className="flex flex-row p-0">
             <DrawerTitle className="flex-1 self-center justify-center text-3xl">
-              Update Meal Entry
+              Update Entry
             </DrawerTitle>
             <Button
               size="icon"
               variant="outline"
-              onClick={() => setSelectedMeal(null)}
+              onClick={() => setSelectedEntry(null)}
               className="shadow-none border-none"
             >
               <X className="size-4" />
             </Button>
           </DrawerHeader>
           <div className="overflow-auto">
-            {selectedMeal && (
-              <MealForm
-                date={new Date(selectedMeal.date)}
-                entry={selectedMeal}
-                commonComponents={commonComponents}
-                onSubmit={async (entry) => {
+            {selectedEntry && (
+              <EntryForm
+                entry={selectedEntry}
+                onSubmit={async (entry: Entry) => {
                   try {
-                    setSelectedMeal(null);
+                    setSelectedEntry(null);
                     await updateEntry(entry);
                     return true;
                   } catch {
-                    toast.error("Ooops, the meal could not be stored");
+                    toast.error("Ooops, the entry could not be stored");
                     return false;
                   }
                 }}
@@ -130,11 +123,11 @@ const AgendaPage: FC = () => {
 
 export default AgendaPage;
 
-function groupByYearMonthDay(entries: MealEntry[]) {
+function groupByYearMonthDay(entries: Entry[]) {
   return entries.reduce<
-    Record<string, Record<string, Record<string, MealEntry[]>>>
-  >((years, meal) => {
-    const date = new Date(meal.date);
+    Record<string, Record<string, Record<string, Entry[]>>>
+  >((years, entry) => {
+    const date = new Date(entry.date);
     const year = date.getFullYear().toString();
     const month = date.getMonth().toString();
     const day = date.getDate();
@@ -143,7 +136,7 @@ function groupByYearMonthDay(entries: MealEntry[]) {
     if (!years[year][month]) years[year][month] = {};
     if (!years[year][month][day]) years[year][month][day] = [];
 
-    years[year][month][day].push(meal);
+    years[year][month][day].push(entry);
     return years;
   }, {});
 }

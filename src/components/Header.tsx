@@ -2,8 +2,12 @@ import { FC } from "react";
 import { Sprout } from "lucide-react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
+import { HeaderMenu, HeaderMenuProps } from "./HeaderMenu";
 
-export const Header: FC<{ title?: string }> = ({ title }) => {
+export const Header: FC<{
+  title?: string;
+  menu?: HeaderMenuProps;
+}> = ({ title, menu }) => {
   return (
     <header
       className={cn(
@@ -46,6 +50,16 @@ export const Header: FC<{ title?: string }> = ({ title }) => {
 
         <h1 className="ml-1 text-xl font-semibold text-gray-800">{title}</h1>
       </div>
+      {menu && (
+        <div className="w-64">
+          <HeaderMenu
+            menuItems={menu.menuItems}
+            selectedMenuItem={menu.selectedMenuItem}
+            onItemChange={menu.onItemChange}
+            placeholder="Select an option"
+          />
+        </div>
+      )}
     </header>
   );
 };

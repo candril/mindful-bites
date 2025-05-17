@@ -21,11 +21,15 @@ import { NewEntryForm } from "./NewEntryForm";
 import { getEnryScore } from "@/data/getEntryScore";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { useLocation, useParams } from "wouter";
+import { DefinitionTile } from "@/components/DefinitionTile";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const [definitionIdForCreation, setDefinitionIdForCreation] = useState<
+    string | null
+  >(null);
   const [, navigate] = useLocation();
 
   const handleDayClick = (day: Day) => {
@@ -36,6 +40,7 @@ const CalendarPage: FC = () => {
     setShowEntryPicker(true);
     setSelectedDay(null);
     setSelectedEntry(null);
+    setDefinitionIdForCreation(null);
   };
 
   const getDayEntries = (date: Date) =>
@@ -93,29 +98,38 @@ const CalendarPage: FC = () => {
       );
     }
 
-    if (selectedDay && definitionId) {
-      return (
-        <NewEntryForm
-          date={selectedDay.date}
-          definitionId={definitionId}
-          onSubmit={async (entry) => {
-            try {
-              reset();
-              await createEntry(entry);
-              return true;
-            } catch {
-              toast.error("Oops, entry could not be stored!");
-              return false;
-            }
-          }}
-        />
-      );
+    if (selectedDay) {
+      if (!definitionIdForCreation) {
+        return definitions?.map((d) => (
+          <DefinitionTile
+            definition={d}
+            onClick={() => setDefinitionIdForCreation(d.id)}
+          />
+        ));
+      } else {
+        return (
+          <NewEntryForm
+            date={selectedDay.date}
+            definitionId={definitionIdForCreation}
+            onSubmit={async (entry) => {
+              try {
+                reset();
+                await createEntry(entry);
+                return true;
+              } catch {
+                toast.error("Oops, entry could not be stored!");
+                return false;
+              }
+            }}
+          />
+        );
+      }
     }
 
     return null;
   };
 
-  const definition = definitions?.find((d) => d.id === definitionId);
+  const definition = definitions?.find((d) => d.id === definitionIdForCreation);
 
   const headerMenu = {
     menuItems: [

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useEntryDefinitions } from "./form/useFieldDefinitions";
 import { Button } from "./ui/button";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
+import { DefinitionTile } from "./DefinitionTile";
 
 export const NewEntryDrawer: FC<{
   isOpen: boolean;
@@ -47,17 +48,11 @@ export const NewEntryDrawer: FC<{
         <div className="overflow-auto">
           {!definitionId &&
             definitions?.map((d) => (
-              <div
+              <DefinitionTile
                 key={d.id}
-                role="button"
-                className="p-4 mb-3 border rounded-lg shadow-sm hover:shadow-md transition-shadow bg-white cursor-pointer"
+                definition={d}
                 onClick={() => setSelectedDefinition(d.id)}
-              >
-                <h3 className="text-lg font-semibold">{d.name}</h3>
-                {d.description && (
-                  <p className="text-sm text-gray-500 mt-1">{d.description}</p>
-                )}
-              </div>
+              />
             ))}
 
           {definitionId && (

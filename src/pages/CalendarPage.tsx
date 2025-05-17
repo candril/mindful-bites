@@ -117,18 +117,20 @@ const CalendarPage: FC = () => {
 
   const definition = definitions?.find((d) => d.id === definitionId);
 
+  const headerMenu = {
+    menuItems: [
+      { id: "all", name: "All", description: "Show all entry types" },
+      ...(definitions?.length ? definitions : []),
+    ],
+    selectedMenuItem: definitionId ?? "all",
+    onItemChange: (key: string) =>
+      key === "all" ? navigate("/calendar") : navigate("/calendar/" + key),
+  };
+
   return (
     <Layout
       title="Calendar"
-      menu={{
-        menuItems: [
-          { id: "all", name: "All", description: "Show all entry types" },
-          ...(definitions?.length ? definitions : []),
-        ],
-        selectedMenuItem: definitionId ?? "all",
-        onItemChange: (key) =>
-          key === "all" ? navigate("/calendar") : navigate("/calendar/" + key),
-      }}
+      menu={definitionCount > 1 ? headerMenu : undefined}
     >
       <Calendar
         className="flex-1"

@@ -3,7 +3,7 @@ import { useData } from "./useData";
 import { useToken } from "@/components/AuthenticationContext";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { EntryDefinition } from "./EntryDefinition";
-import { format } from "date-fns";
+import { format } from "date-fns/format";
 
 export type Entry = {
   id: string;

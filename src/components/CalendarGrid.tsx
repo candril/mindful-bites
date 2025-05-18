@@ -1,14 +1,12 @@
-import {
-  addDays,
-  endOfMonth,
-  format,
-  getDay,
-  isBefore,
-  isSameMonth,
-  isToday,
-  startOfMonth,
-  subDays,
-} from "date-fns";
+import { addDays } from "date-fns/addDays";
+import { endOfMonth } from "date-fns/endOfMonth";
+import { format } from "date-fns/format";
+import { getDay } from "date-fns/getDay";
+import { isBefore } from "date-fns/isBefore";
+import { isSameMonth } from "date-fns/isSameMonth";
+import { isToday } from "date-fns/isToday";
+import { startOfMonth } from "date-fns/startOfMonth";
+import { subDays } from "date-fns/subDays";
 import { forwardRef, ReactNode } from "react";
 
 const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];

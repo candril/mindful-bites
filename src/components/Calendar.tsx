@@ -1,8 +1,8 @@
 import { ReactNode, RefObject, useEffect, useRef, useState } from "react";
 import { CalendarGrid, Day } from "./CalendarGrid";
 import { CalendarHeader } from "./CalendarHeader";
-import { addMonths } from "date-fns";
 import { cn } from "@/lib/utils";
+import { addMonths } from "date-fns/addMonths";
 
 interface CalendarProps {
   className?: string;

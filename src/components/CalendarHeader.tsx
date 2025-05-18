@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format } from "date-fns/format";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarHeaderProps {

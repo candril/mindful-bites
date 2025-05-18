@@ -12,7 +12,8 @@ import {
   Drawer,
 } from "@/components/ui/drawer";
 import { Entry, useEntries } from "@/data/useStorage";
-import { format, isSameDay } from "date-fns";
+import { format } from "date-fns/format";
+import { isSameDay } from "date-fns/isSameDay";
 import { X } from "lucide-react";
 import { FC, useState } from "react";
 import { toast } from "sonner";

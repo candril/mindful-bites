@@ -1,6 +1,5 @@
 import { FC, useState } from "react";
 import { EntryTile } from "@/components/EntryTile";
-import { format } from "date-fns";
 import { Layout } from "@/components/Layout";
 import {
   Drawer,
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Entry, useEntries } from "@/data/useStorage";
+import { format } from "date-fns/format";
 
 const AgendaPage: FC = () => {
   const { entries, updateEntry } = useEntries();

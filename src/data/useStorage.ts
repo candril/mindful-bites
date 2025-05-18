@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useData } from "./useData";
 import { useToken } from "@/components/AuthenticationContext";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { EntryDefinition } from "./EntryDefinition";
+import { format } from "date-fns";
 
 export type Entry = {
   id: string;
@@ -55,23 +56,26 @@ export function useEntries() {
   const { data, mutate } = useData<Entry[]>(`/api/users/${token}/entries`);
   const definitions = useEntryDefinitions();
 
-  const definitionMap = new Map<string, EntryDefinition>(
-    definitions?.map((d) => [d.id, d]) ?? [],
-  );
+  const entries = useMemo(() => {
+    const definitionMap = new Map<string, EntryDefinition>(
+      definitions?.map((d) => [d.id, d]) ?? [],
+    );
 
-  const entries = definitions
-    ? (data?.map((e) => {
-        const definition = definitionMap.get(e.definitionId);
-        if (!definition) {
-          throw new Error(`Missing defintion with ID '${e.definitionId}'`);
-        }
+    return definitions
+      ? (data?.map((e) => {
+          const definition = definitionMap.get(e.definitionId);
+          if (!definition) {
+            throw new Error(`Missing defintion with ID '${e.definitionId}'`);
+          }
 
-        return {
-          ...e,
-          definition,
-        };
-      }) ?? [])
-    : [];
+          return {
+            ...e,
+            date: format(e.date, "yyyy-MM-dd"),
+            definition,
+          };
+        }) ?? [])
+      : [];
+  }, [data, definitions]);
 
   const createEntry = useCallback(
     async (entry: Entry) => {

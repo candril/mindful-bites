@@ -1,6 +1,7 @@
 import {
   addDays,
   endOfMonth,
+  format,
   getDay,
   isBefore,
   isSameMonth,
@@ -76,6 +77,7 @@ export const CalendarGrid = forwardRef<HTMLDivElement, CalendarGridProps>(
 export type Day = {
   isToday: boolean;
   isCurrentMonth: boolean;
+  dateString: string;
   date: Date;
 };
 
@@ -94,8 +96,13 @@ function* getCalendarDays(month: Date): Generator<Day, void, unknown> {
 
   let date = firstDayInView;
   while (isBefore(date, lastDayInView)) {
+    const utcDate = new Date(
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+    );
+
     yield {
-      date,
+      date: utcDate,
+      dateString: format(utcDate, "yyyy-MM-dd"),
       isCurrentMonth: isSameMonth(date, month),
       isToday: isToday(date),
     };

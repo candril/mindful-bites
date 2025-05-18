@@ -1,4 +1,3 @@
-import * as LucideIcons from "lucide-react";
 import { Calendar } from "../components/Calendar";
 import { Entry, useEntries } from "../data/useStorage";
 import { FC, useCallback, useMemo, useState } from "react";
@@ -52,12 +51,7 @@ const CalendarPage: FC = () => {
   const headerMenu: HeaderMenuProps = {
     menuItems: [
       { id: "all", name: "All", description: "Show all entry types" },
-      ...(definitions?.length ? definitions : []).map((d) => {
-        return {
-          ...d,
-          icon: d.iconName ? <DynamicIcon name={d.iconName} /> : null,
-        };
-      }),
+      ...(definitions?.length ? definitions : []),
     ],
     selectedMenuItem: definitionId ?? "all",
     onItemChange: (key: string) =>
@@ -86,16 +80,6 @@ const CalendarPage: FC = () => {
       />
     </Layout>
   );
-};
-
-const DynamicIcon: FC<{ name?: string }> = ({ name }) => {
-  if (name) {
-    // @ts-expect-error invalid TS error
-    const Icon = LucideIcons[name];
-    return <Icon />;
-  }
-
-  return null;
 };
 
 export default CalendarPage;

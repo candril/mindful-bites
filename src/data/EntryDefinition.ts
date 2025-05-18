@@ -34,6 +34,7 @@ export type EntryDefinition = {
   id: string;
   name: string;
   description: string;
+  iconName?: string;
   fields: FieldDefinition[];
   titleTemplate: string;
   subtitleTemplate: string;

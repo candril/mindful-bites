@@ -1,13 +1,15 @@
+import * as LucideIcons from "lucide-react";
 import { Calendar } from "../components/Calendar";
 import { Entry, useEntries } from "../data/useStorage";
 import { FC, useCallback, useMemo, useState } from "react";
 import { Dot } from "../components/Dot";
 import { Day } from "../components/CalendarGrid";
 import { Layout } from "@/components/Layout";
-import { getEnryScore } from "@/data/getEntryScore";
+import { getEntryScore } from "@/data/getEntryScore";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { useLocation, useParams } from "wouter";
 import { EditDrawer } from "./EditDrawer";
+import { HeaderMenuProps } from "@/components/HeaderMenu";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
@@ -47,10 +49,15 @@ const CalendarPage: FC = () => {
     [definitionId, entriesByDay],
   );
 
-  const headerMenu = {
+  const headerMenu: HeaderMenuProps = {
     menuItems: [
       { id: "all", name: "All", description: "Show all entry types" },
-      ...(definitions?.length ? definitions : []),
+      ...(definitions?.length ? definitions : []).map((d) => {
+        return {
+          ...d,
+          icon: d.iconName ? <DynamicIcon name={d.iconName} /> : null,
+        };
+      }),
     ],
     selectedMenuItem: definitionId ?? "all",
     onItemChange: (key: string) =>
@@ -68,7 +75,7 @@ const CalendarPage: FC = () => {
         onDayClick={(day) => setSelectedDay(day)}
         additionalContent={(day) =>
           getDayEntries(day).map((entry) => (
-            <Dot key={entry.id} rating={getEnryScore(entry)} />
+            <Dot key={entry.id} rating={getEntryScore(entry)} />
           ))
         }
       />
@@ -79,6 +86,15 @@ const CalendarPage: FC = () => {
       />
     </Layout>
   );
+};
+
+const DynamicIcon: FC<{ name?: string }> = ({ name }) => {
+  if (name) {
+    const Icon = LucideIcons[name];
+    return <Icon />;
+  }
+
+  return null;
 };
 
 export default CalendarPage;

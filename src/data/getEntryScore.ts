@@ -29,7 +29,7 @@ export function getRating(score: number): RatingColor {
   }
 }
 
-export function getEnryScore(entry: Entry): RatingColor {
+export function getEntryScore(entry: Entry): RatingColor {
   const score = new ExpressionParser(
     entry.definition.parsedRatingExpression,
     createNumberReplacer(entry.definition, entry.data),

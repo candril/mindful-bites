@@ -89,10 +89,13 @@ export const HeaderMenu: FC<HeaderMenuProps> = ({
               item.id === selectedMenuItem && "bg-gray-50",
             )}
           >
-            <div className="flex items-center">
-              <div>
-                <div className="font-medium">{item.name}</div>
-                <p className="text-xs text-gray-500">{item.description}</p>
+            <div className="flex flex-row items-center space-x-3">
+              <div>{item.icon ? item.icon : <div className="w-6"></div>}</div>
+              <div className="flex items-center">
+                <div>
+                  <div className="font-medium">{item.name}</div>
+                  <p className="text-xs text-gray-500">{item.description}</p>
+                </div>
               </div>
             </div>
           </div>

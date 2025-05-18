@@ -69,7 +69,7 @@ export const HeaderMenu: FC<HeaderMenuProps> = ({
       <div
         className={cn(
           "absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg",
-          "max-h-60 overflow-y-auto origin-top",
+          "max-h-100 overflow-y-auto origin-top",
           "transition-all duration-200 ease-in-out",
           isOpen
             ? "opacity-100 translate-y-0"

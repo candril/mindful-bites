@@ -12,9 +12,10 @@ import { createDefaultEntry } from "@/data/createDefaultEntry";
 import { useToken } from "./AuthenticationContext";
 
 export const NewEntryDrawer: FC<{
+  date: Date;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-}> = ({ isOpen, onOpenChange }) => {
+}> = ({ isOpen, date, onOpenChange }) => {
   const token = useToken();
   const { createEntry } = useEntries();
 
@@ -34,11 +35,12 @@ export const NewEntryDrawer: FC<{
     definitionCount === 1 ? definitions?.[0].id : selectedDefinitionId;
 
   async function handleDefinitionClick(definition: EntryDefinition) {
-    if (definition.fields.length === 0) {
-      const defaultEntry = createDefaultEntry(new Date(), token, definition);
-      await handleCreateEntry(defaultEntry);
-    } else {
+    const fieldCount = definition?.fields?.length ?? 0;
+    if (fieldCount > 0) {
       setSelectedDefinition(definition.id);
+    } else {
+      const defaultEntry = createDefaultEntry(date, token, definition);
+      await handleCreateEntry(defaultEntry);
     }
   }
 
@@ -74,14 +76,14 @@ export const NewEntryDrawer: FC<{
               <DefinitionTile
                 key={d.id}
                 definition={d}
-                onClick={() => handleDefinitionClick(d)}
+                onClick={async () => await handleDefinitionClick(d)}
               />
             ))}
 
           {definitionId && (
             <NewEntryForm
               definitionId={definitionId}
-              date={new Date()}
+              date={date}
               onSubmit={handleCreateEntry}
             />
           )}

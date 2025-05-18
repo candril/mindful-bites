@@ -17,6 +17,7 @@ export const Layout: FC<{
       <main className="flex flex-col flex-1 pb-16">{children}</main>
 
       <NewEntryDrawer
+        date={new Date()}
         isOpen={isOpen}
         onOpenChange={(open) => setIsOpen(open)}
       />

@@ -17,16 +17,14 @@ import { X } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { toast } from "sonner";
 import { EntryPicker } from "@/components/EntryPicker";
-import { NewEntryForm } from "./NewEntryForm";
 import { getEnryScore } from "@/data/getEntryScore";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { useLocation, useParams } from "wouter";
-import { DefinitionTile } from "@/components/DefinitionTile";
+import { EntryDefinition } from "@/data/EntryDefinition";
+import { NewEntryDrawer } from "@/components/NewEntryDrawer";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
-  const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
-  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
   const [definitionIdForCreation, setDefinitionIdForCreation] = useState<
     string | null
   >(null);
@@ -37,9 +35,7 @@ const CalendarPage: FC = () => {
   };
 
   const reset = () => {
-    setShowEntryPicker(true);
     setSelectedDay(null);
-    setSelectedEntry(null);
     setDefinitionIdForCreation(null);
   };
 
@@ -49,7 +45,7 @@ const CalendarPage: FC = () => {
   const definitions = useEntryDefinitions();
 
   const { definitionId: definitionIdFromParams } = useParams();
-  const { entries, updateEntry, deleteEntry, createEntry } = useEntries();
+  const { entries } = useEntries();
 
   const definitionCount = definitions?.length ?? 0;
 
@@ -59,75 +55,6 @@ const CalendarPage: FC = () => {
   const filteredEntries = !definitionId
     ? entries
     : entries.filter((e) => e.definitionId === definitionId);
-
-  const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
-
-  const getSheetContent = () => {
-    if (selectedEntry) {
-      return (
-        <EntryForm
-          entry={selectedEntry}
-          onSubmit={async (entry: Entry) => {
-            try {
-              reset();
-              await updateEntry(entry);
-              return true;
-            } catch {
-              toast.error("Oops, entry could not be stored!");
-              return false;
-            }
-          }}
-        />
-      );
-    }
-
-    if (dayEntries.length && showEntryPicker) {
-      return (
-        <EntryPicker
-          entries={dayEntries}
-          onAddClick={() => setShowEntryPicker(false)}
-          onEntryClick={(entry) => setSelectedEntry(entry)}
-          onRemoveClick={async (entry) => {
-            try {
-              await deleteEntry(entry.id);
-            } catch {
-              toast.error("Ooops, could not delete the entry");
-            }
-          }}
-        />
-      );
-    }
-
-    if (selectedDay) {
-      if (!definitionIdForCreation) {
-        return definitions?.map((d) => (
-          <DefinitionTile
-            definition={d}
-            onClick={() => setDefinitionIdForCreation(d.id)}
-          />
-        ));
-      } else {
-        return (
-          <NewEntryForm
-            date={selectedDay.date}
-            definitionId={definitionIdForCreation}
-            onSubmit={async (entry) => {
-              try {
-                reset();
-                await createEntry(entry);
-                return true;
-              } catch {
-                toast.error("Oops, entry could not be stored!");
-                return false;
-              }
-            }}
-          />
-        );
-      }
-    }
-
-    return null;
-  };
 
   const definition = definitions?.find((d) => d.id === definitionIdForCreation);
 
@@ -157,36 +84,128 @@ const CalendarPage: FC = () => {
         }
       />
 
-      <Drawer
-        open={selectedDay !== null}
-        onOpenChange={(open) => !open && reset()}
-      >
-        <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
-          <DrawerHeader className="flex p-0">
-            <div className="flex flex-row">
-              <DrawerTitle className="flex-1 self-center justify-center text-3xl">
-                {definition && `New ${definition.name}`}
-              </DrawerTitle>
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={reset}
-                className="shadow-none border-none"
-              >
-                <X className="size-4" />
-              </Button>
-            </div>
-
-            <DrawerDescription>
-              {selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}
-            </DrawerDescription>
-          </DrawerHeader>
-
-          <div className="overflow-auto">{getSheetContent()}</div>
-        </DrawerContent>
-      </Drawer>
+      <EditDrawer
+        selectedDay={selectedDay}
+        definition={definition}
+        onClose={reset}
+      />
     </Layout>
   );
 };
 
 export default CalendarPage;
+
+const EditDrawer: FC<{
+  selectedDay: Day | null;
+  definition: EntryDefinition | undefined;
+  onClose: () => void;
+}> = ({ selectedDay, definition, onClose }) => {
+  const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const [showEntryPicker, setShowEntryPicker] = useState<boolean>(true);
+
+  const getDayEntries = (date: Date) =>
+    filteredEntries.filter((e) => isSameDay(e.date, date));
+
+  const definitions = useEntryDefinitions();
+
+  const { definitionId: definitionIdFromParams } = useParams();
+  const { entries, updateEntry, deleteEntry } = useEntries();
+
+  const definitionCount = definitions?.length ?? 0;
+
+  const definitionId =
+    definitionCount === 1 ? definitions?.[0].id : definitionIdFromParams;
+
+  const filteredEntries = !definitionId
+    ? entries
+    : entries.filter((e) => e.definitionId === definitionId);
+
+  const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
+
+  function reset() {
+    setSelectedEntry(null);
+    setShowEntryPicker(true);
+    onClose();
+  }
+
+  if (selectedDay != null && !selectedEntry && dayEntries.length === 0) {
+    return (
+      <NewEntryDrawer
+        isOpen={selectedDay != null}
+        date={selectedDay.date}
+        onOpenChange={(open) => !open && reset()}
+      />
+    );
+  }
+
+  return (
+    <Drawer
+      open={selectedDay !== null}
+      onOpenChange={(open) => !open && reset()}
+    >
+      <DrawerContent className="max-w-3xl m-auto p-4 space-y-8">
+        <DrawerHeader className="flex p-0">
+          <div className="flex flex-row">
+            <DrawerTitle className="flex-1 self-center justify-center text-3xl">
+              {definition && `New ${definition.name}`}
+            </DrawerTitle>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={reset}
+              className="shadow-none border-none"
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
+
+          <DrawerDescription>
+            {selectedDay && format(selectedDay.date, "EEEE, dd MMMM yyyy")}
+          </DrawerDescription>
+        </DrawerHeader>
+
+        <div className="overflow-auto">{getContent()}</div>
+      </DrawerContent>
+    </Drawer>
+  );
+
+  function getContent() {
+    if (selectedEntry) {
+      return (
+        <EntryForm
+          entry={selectedEntry}
+          onSubmit={async (entry: Entry) => {
+            try {
+              reset();
+              await updateEntry(entry);
+              return true;
+            } catch {
+              toast.error("Oops, entry could not be stored!");
+              return false;
+            }
+          }}
+        />
+      );
+    }
+
+    if (dayEntries.length && showEntryPicker) {
+      return (
+        <EntryPicker
+          entries={dayEntries}
+          onAddClick={() => setShowEntryPicker(false)}
+          onEntryClick={(entry) => setSelectedEntry(entry)}
+          onRemoveClick={async (entry) => {
+            try {
+              reset();
+              await deleteEntry(entry.id);
+            } catch {
+              toast.error("Ooops, could not delete the entry");
+            }
+          }}
+        />
+      );
+    }
+
+    return null;
+  }
+};

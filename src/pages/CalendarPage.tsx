@@ -90,6 +90,7 @@ const CalendarPage: FC = () => {
 
 const DynamicIcon: FC<{ name?: string }> = ({ name }) => {
   if (name) {
+    // @ts-expect-error invalid TS error
     const Icon = LucideIcons[name];
     return <Icon />;
   }

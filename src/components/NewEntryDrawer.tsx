@@ -1,6 +1,6 @@
 import { Entry, useEntries } from "@/data/useStorage";
 import { NewEntryForm } from "@/pages/NewEntryForm";
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { FC, useState } from "react";
 import { toast } from "sonner";
 import { useEntryDefinitions } from "./form/useFieldDefinitions";
@@ -77,6 +77,7 @@ export const NewEntryDrawer: FC<{
                 key={d.id}
                 definition={d}
                 onClick={async () => await handleDefinitionClick(d)}
+                end={d.fields.length > 0 && <ArrowRight />}
               />
             ))}
 

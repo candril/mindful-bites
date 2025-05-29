@@ -40,7 +40,7 @@ export const CalendarGrid = forwardRef<HTMLDivElement, CalendarGridProps>(
             {days.map((day) => (
               <button
                 key={day.date.getTime()}
-                onClick={() => day.isCurrentMonth && onDayClick(day)}
+                onClick={() => onDayClick(day)}
                 className={`relative flex flex-col group min-h-[60px] sm:min-h-[120px] rounded-xl sm:rounded-2xl p-2 sm:p-3 transition-all ${
                   day.isCurrentMonth
                     ? "bg-white hover:shadow-lg hover:scale-[1.02] border border-gray-100"
@@ -59,9 +59,7 @@ export const CalendarGrid = forwardRef<HTMLDivElement, CalendarGridProps>(
                   {day.date.getDate()}
                 </span>
                 <div className="flex-1 flex flex-wrap items-end space-x-1">
-                  {day.isCurrentMonth && (
-                    <>{additionalContent && additionalContent(day)}</>
-                  )}
+                  <>{additionalContent && additionalContent(day)}</>
                 </div>
               </button>
             ))}

@@ -20,6 +20,7 @@ const colorCoding: RatingColor[] = [
 ];
 
 export function getRating(score: number): RatingColor {
+  score = Math.floor(score);
   if (score <= 0) {
     return "bad";
   } else if (score >= colorCoding.length) {
@@ -29,11 +30,15 @@ export function getRating(score: number): RatingColor {
   }
 }
 
-export function getEntryScore(entry: Entry): RatingColor {
+export function getEntryScore(entry: Entry): number {
   const score = new ExpressionParser(
     entry.definition.parsedRatingExpression,
     createNumberReplacer(entry.definition, entry.data),
   ).evaluate();
 
-  return getRating(score);
+  return score;
+}
+
+export function getEntryRating(entry: Entry) {
+  return getRating(getEntryScore(entry));
 }

@@ -4,15 +4,18 @@ import { FC, useCallback, useMemo, useState } from "react";
 import { Dot } from "../components/Dot";
 import { Day } from "../components/CalendarGrid";
 import { Layout } from "@/components/Layout";
-import { getEntryScore } from "@/data/getEntryScore";
+import { getEntryRating, getEntryScore, getRating } from "@/data/getEntryScore";
 import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 import { useLocation, useParams } from "wouter";
 import { EditDrawer } from "./EditDrawer";
 import { HeaderMenuProps } from "@/components/HeaderMenu";
+import { usePreviewFeature } from "@/data/useSetPreviewFeature";
 
 const CalendarPage: FC = () => {
   const [selectedDay, setSelectedDay] = useState<Day | null>(null);
   const [, navigate] = useLocation();
+
+  const showCombinedRatings = usePreviewFeature("combined-rating");
 
   const definitions = useEntryDefinitions();
 
@@ -67,11 +70,24 @@ const CalendarPage: FC = () => {
         className="flex-1"
         startMonth={new Date()}
         onDayClick={(day) => setSelectedDay(day)}
-        additionalContent={(day) =>
-          getDayEntries(day).map((entry) => (
-            <Dot key={entry.id} rating={getEntryScore(entry)} />
-          ))
-        }
+        additionalContent={(day) => {
+          if (definitionId != null || !showCombinedRatings) {
+            return getDayEntries(day).map((entry) => (
+              <Dot key={entry.id} rating={getEntryRating(entry)} />
+            ));
+          } else {
+            const entries = getDayEntries(day);
+            if (entries.length) {
+              const total = entries
+                .map(getEntryScore)
+                .reduce((total, num) => total + num, 0);
+              const avg = total / entries.length;
+              return <Dot rating={getRating(avg)}></Dot>;
+            }
+
+            return null;
+          }
+        }}
       />
 
       <EditDrawer

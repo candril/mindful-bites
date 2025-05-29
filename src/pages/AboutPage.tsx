@@ -12,15 +12,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useEntries } from "@/data/useStorage";
 import { ChevronRight, Copy, Download, LogOut, Share } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSetPreviewFeature } from "../data/useSetPreviewFeature";
 
 const AboutPage = () => {
   const token = useToken();
   const [copied, setCopied] = useState<"token" | "link" | null>(null);
   const { entries } = useEntries();
+
+  const { data: isPreviewFeatureActive, mutate } =
+    useSetPreviewFeature("combined-rating");
 
   const handleCopyToken = () => {
     navigator.clipboard.writeText(token);
@@ -147,6 +153,30 @@ const AboutPage = () => {
           </Button>
         </div>
 
+        <div className="py-2 px-4 bg-gray-50">
+          <h2 className="text-sm font-medium text-gray-500">
+            PREVIEW FEATURES
+          </h2>
+        </div>
+        <div className="p-4 flex items-center justify-between">
+          <Label
+            htmlFor="combined-rating-toggle"
+            className="flex flex-col items-start"
+          >
+            <span>Combined Rating</span>
+            <span className="text-xs text-gray-500">
+              Combine ratings for all entries per day on the calendar view if
+              "All" is selected.
+            </span>
+          </Label>
+          <Switch
+            id="combined-rating-toggle"
+            checked={isPreviewFeatureActive ?? false}
+            onCheckedChange={mutate}
+            aria-label="Toggle combined rating preview feature"
+          />
+        </div>
+
         {/* About section */}
         <div className="py-2 px-4 bg-gray-50">
           <h2 className="text-sm font-medium text-gray-500">ABOUT</h2>
@@ -166,6 +196,7 @@ const AboutPage = () => {
           <span>Version</span>
           <span className="text-gray-500">{import.meta.env.APP_VERSION}</span>
         </div>
+
         <div className="mt-8">
           <div className="py-2 px-4 bg-red-50">
             <h2 className="text-sm font-medium text-red-500 uppercase">

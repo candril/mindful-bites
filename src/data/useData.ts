@@ -20,11 +20,19 @@ const handlerMap = new Map<string, Handler[]>();
 
 const memoryCache = readLocalStorage();
 
-export function useData<T>(path: string): {
+export function useData<T>(
+  path: string,
+  options?: {
+    isLocalOnly: boolean;
+  },
+): {
   data: T | null;
   mutate: (newData: T) => void;
 } {
-  const [data, setData] = useState<T | null>(null);
+  const [data, setData] = useState<T | null>(() => {
+    const v = memoryCache[path];
+    return v != null ? (v as T) : null;
+  });
 
   const mutate = useCallback(
     (data: T) => {
@@ -55,27 +63,31 @@ export function useData<T>(path: string): {
     };
   }, [path]);
 
+  const isLocalOnly = options?.isLocalOnly === true;
+
   useEffect(() => {
     const fromCache = memoryCache[path];
     if (fromCache) {
       setData(fromCache as T);
     }
 
-    let promise = requestMap.get(path);
-    if (!promise) {
-      promise = fetch(path).then((res) => res.json());
-      requestMap.set(path, promise);
-    }
+    if (!isLocalOnly) {
+      let promise = requestMap.get(path);
+      if (!promise) {
+        promise = fetch(path).then((res) => res.json());
+        requestMap.set(path, promise);
+      }
 
-    promise.then((d) => {
-      requestMap.delete(path);
-      mutate(d as T);
-    });
+      promise.then((d) => {
+        requestMap.delete(path);
+        mutate(d as T);
+      });
+    }
 
     return () => {
       requestMap.delete(path);
     };
-  }, [path, mutate]);
+  }, [path, isLocalOnly, mutate]);
 
   return { data, mutate };
 }

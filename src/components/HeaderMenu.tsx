@@ -43,6 +43,7 @@ export const HeaderMenu: FC<HeaderMenuProps> = ({
 
   return (
     <div ref={dropdownRef} className="relative">
+      <h1>I'm the head</h1>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(

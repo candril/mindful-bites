@@ -17,15 +17,15 @@ const CalendarPage: FC = () => {
 
   const showCombinedRatings = usePreviewFeature("combined-rating");
 
-  const definitions = useEntryDefinitions();
+  const def_ini_tions = useEntryDefinitions();
 
   const { definitionId: definitionIdFromParams } = useParams();
   const { entries } = useEntries();
 
-  const definitionCount = definitions?.length ?? 0;
+  const definitionCount = def_ini_tions?.length ?? 0;
 
   const definitionId =
-    definitionCount === 1 ? definitions?.[0].id : definitionIdFromParams;
+    definitionCount === 1 ? def_ini_tions?.[0].id : definitionIdFromParams;
 
   const entriesByDay = useMemo(
     () =>
@@ -54,7 +54,7 @@ const CalendarPage: FC = () => {
   const headerMenu: HeaderMenuProps = {
     menuItems: [
       { id: "all", name: "All", description: "Show all entry types" },
-      ...(definitions?.length ? definitions : []),
+      ...(def_ini_tions?.length ? def_ini_tions : []),
     ],
     selectedMenuItem: definitionId ?? "all",
     onItemChange: (key: string) =>

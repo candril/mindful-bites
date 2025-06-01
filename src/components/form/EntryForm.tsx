@@ -3,10 +3,13 @@ import { useEntryForm } from "./useEntryForm";
 import { Button } from "../ui/button";
 import { Entry, useEntries } from "@/data/useStorage";
 import { OptionPicker } from "./OptionPicker";
-import { useFieldDefinitions } from "./useFieldDefinitions";
 import { ComponentPicker } from "./ComponentPicker";
 import { getCommonChoices } from "@/data/getCommonChoices";
-import { FieldDefinition, FieldType } from "@/data/EntryDefinition";
+import {
+  EntryDefinition,
+  FieldDefinition,
+  FieldType,
+} from "@/data/EntryDefinition";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 
@@ -91,11 +94,11 @@ function getFieldComponent(type: FieldType): ComponentType<FieldProps> {
       return ChoiceField;
     case "combo_multi_choice":
       return ComboChoiceField;
+    case "boolean":
+      return BooleanField;
     case "text":
     case "checkbox":
     case "date":
-    case "boolean":
-      return BooleanField;
     case "multi_choice":
       return NoopField;
   }
@@ -124,12 +127,13 @@ const Field: FC<{
 
 export const EntryForm: FC<{
   entry: Entry;
+  definition: EntryDefinition;
   commonComponents?: string[];
   onSubmit: (data: Entry) => Promise<boolean>;
-}> = ({ onSubmit, entry }) => {
+}> = ({ onSubmit, entry, definition }) => {
   const { getFormData, data, setDataField, resetForm } = useEntryForm(entry);
 
-  const fields = useFieldDefinitions(entry.definitionId);
+  const fields = definition.fields;
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

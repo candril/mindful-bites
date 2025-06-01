@@ -4,9 +4,11 @@ export type ChoiceItem = {
   key: string;
   title: string;
   value: unknown;
-  color?: string;
+  color?: Colors;
   modifier?: number;
 };
+
+type Colors = "red" | "orange" | "yellow" | "green" | "emerald";
 
 export type FieldType =
   | "text"

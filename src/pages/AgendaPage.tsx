@@ -13,11 +13,13 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 import { Entry, useEntries } from "@/data/useStorage";
 import { format } from "date-fns/format";
+import { useEntryDefinitions } from "@/components/form/useFieldDefinitions";
 
 const AgendaPage: FC = () => {
   const { entries, updateEntry } = useEntries();
 
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
+  const definitions = useEntryDefinitions();
 
   const entriesByYearMonthDay = groupByYearMonthDay(entries);
 
@@ -102,6 +104,9 @@ const AgendaPage: FC = () => {
             {selectedEntry && (
               <EntryForm
                 entry={selectedEntry}
+                definition={definitions?.find(
+                  (d) => d.id == selectedEntry.definitionId,
+                )}
                 onSubmit={async (entry: Entry) => {
                   try {
                     setSelectedEntry(null);

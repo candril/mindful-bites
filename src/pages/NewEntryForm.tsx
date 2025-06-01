@@ -23,6 +23,7 @@ export const NewEntryForm: FC<{
   return (
     <EntryForm
       entry={createDefaultEntry(date, token, definition)}
+      definition={definition}
       onSubmit={onSubmit}
     />
   );

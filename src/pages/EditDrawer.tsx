@@ -99,10 +99,15 @@ export const EditDrawer: FC<{
   );
 
   function getContent() {
+    if (!definition) {
+      return null;
+    }
+
     if (selectedEntry) {
       return (
         <EntryForm
           entry={selectedEntry}
+          definition={definition}
           onSubmit={async (entry: Entry) => {
             try {
               reset();

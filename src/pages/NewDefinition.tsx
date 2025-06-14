@@ -15,76 +15,7 @@ import { Loader2 } from "lucide-react";
 import { createDefaultEntry } from "@/data/createDefaultEntry";
 import { EntryForm } from "@/components/form/EntryForm";
 import { useToken } from "@/components/AuthenticationContext";
-// const FAKE_RESULT = {
-//   id: "happiness_entry",
-//   name: "Happiness Tracker",
-//   description: "Track your daily happiness level and main reason.",
-//   iconName: "smile",
-//   fields: [
-//     {
-//       id: "happiness_level",
-//       definitionId: "happiness_entry",
-//       name: "Happiness Level",
-//       type: "choice",
-//       isRequired: true,
-//       label: "How happy are you today?",
-//       description: "Select your overall happiness level for today.",
-//       defaultValue: "3",
-//       choices: [
-//         {
-//           key: "1",
-//           title: "Very Unhappy",
-//           value: 1,
-//           color: "#e53935",
-//           modifier: 1,
-//         },
-//         {
-//           key: "2",
-//           title: "Unhappy",
-//           value: 2,
-//           color: "#fb8c00",
-//           modifier: 2,
-//         },
-//         {
-//           key: "3",
-//           title: "Neutral",
-//           value: 3,
-//           color: "#fdd835",
-//           modifier: 3,
-//         },
-//         {
-//           key: "4",
-//           title: "Happy",
-//           value: 4,
-//           color: "#43a047",
-//           modifier: 4,
-//         },
-//         {
-//           key: "5",
-//           title: "Very Happy",
-//           value: 5,
-//           color: "#1e88e5",
-//           modifier: 5,
-//         },
-//       ],
-//       order: 1,
-//     },
-//     {
-//       id: "main_reason",
-//       name: "Main Reason",
-//       type: "text",
-//       isRequired: false,
-//       label: "Main reason for your happiness level",
-//       description: "Optionally describe why you feel this way.",
-//       order: 2,
-//       defaultValue: "",
-//       definitionId: "happiness_entry",
-//     },
-//   ],
-//   titleTemplate: "Happiness: {happiness_level}",
-//   subtitleTemplate: "Reason: {main_reason}",
-//   ratingExpression: "happiness_level",
-// } satisfies Omit<EntryDefinition, "parsedRatingExpression">;
+import { toast } from "sonner";
 
 type Result = Omit<EntryDefinition, "parsedRatingExpression">;
 
@@ -177,10 +108,6 @@ const NewDefinitionPage: FC = () => {
               <CardTitle>Generated Definition</CardTitle>
             </CardHeader>
             <CardContent>
-              <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm">
-                {JSON.stringify(result, null, 2)}
-              </pre>
-
               <EntryForm
                 entry={createDefaultEntry(
                   new Date(),
@@ -188,11 +115,29 @@ const NewDefinitionPage: FC = () => {
                   result as EntryDefinition,
                 )}
                 definition={result as EntryDefinition}
-                onSubmit={(x) => {
-                  console.log(x);
-                  return true;
-                }}
+                onSubmit={() => Promise.resolve(true)}
               />
+
+              <Button
+                className="mt-4 w-full"
+                onClick={async () => {
+                  const res = await fetch(
+                    `/api/users/${token}/definitions/${result.id}`,
+                    {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(result),
+                    },
+                  );
+                  if (res.ok) {
+                    toast.success("Definition created successfully!");
+                  } else {
+                    toast.error("Failed to create definition.");
+                  }
+                }}
+              >
+                Create Definition
+              </Button>
             </CardContent>
           </Card>
         )}

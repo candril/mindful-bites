@@ -145,6 +145,8 @@ Focus on choice fields to give a quick an easy way to define values
 Also use combo_multi_choice where possible. This gives the users the option to track specificly what they did and they can choose from previous values 
 
 The date to track on which day has not to be included. It's implicitely already given.
+
+Use uuid as IDs for all elments
 `;
 
   try {
@@ -255,17 +257,7 @@ The date to track on which day has not to be included. It's implicitely already 
       throw new Error("OpenAI returned an empty response.");
     }
 
-    // Define a type for the AI's output structure, more flexible for fields
-    type AiFieldDefinition = Omit<
-      UserFieldDefinition,
-      "id" | "definitionId" | "order" | "isRequired" | "name"
-    > & { name: string };
-    type AiEntryDefinition = Omit<
-      EntryDefinition,
-      "id" | "fields" | "parsedRatingExpression"
-    > & { fields?: AiFieldDefinition[] };
-
-    const aiDefinition = JSON.parse(aiResponseJson) as AiEntryDefinition;
+    const aiDefinition = JSON.parse(aiResponseJson);
 
     if (
       !aiDefinition.name ||
@@ -295,6 +287,103 @@ The date to track on which day has not to be included. It's implicitely already 
   }
 }
 
+async function updateDefinition(req: Request, context: Context) {
+  const { token, id } = context.params;
+  if (!token || !id) {
+    return new Response(
+      JSON.stringify({ error: "Missing user token or definition id" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  let body;
+  try {
+    body = await req.json();
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "Invalid JSON body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const supabase = getClient();
+
+  // Upsert entry_data_definitions
+  const entryPayload = {
+    id: body.id,
+    name: body.name,
+    description: body.description,
+    icon_name: body.iconName,
+    title_template: body.titleTemplate,
+    subtitle_template: body.subtitleTemplate,
+    rating_expression: body.ratingExpression,
+    user_token: token,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error: entryError } = await supabase
+    .from(ENTRY_DEFINITIONS_TABLE_NAME)
+    .upsert(entryPayload, { onConflict: "id" });
+
+  if (entryError) {
+    console.error(entryError);
+    return new Response(
+      JSON.stringify({ error: "Failed to upsert entry definition" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // Remove existing field_definitions for this definition
+  await supabase
+    .from(FIELD_DEFINITIONS_TABLE_NAME)
+    .delete()
+    .eq("definition_id", id);
+
+  // Insert new field_definitions
+  const fields = Array.isArray(body.fields) ? body.fields : [];
+  const fieldRows = fields.map((f: any) => ({
+    id: f.id,
+    definition_id: id,
+    type: f.type,
+    name: f.name,
+    label: f.label,
+    description: f.description,
+    required: f.isRequired,
+    choices: f.choices,
+    default_value: f.defaultValue,
+    order: f.order,
+    updated_at: new Date().toISOString(),
+  }));
+
+  if (fieldRows.length > 0) {
+    const { error: fieldError } = await supabase
+      .from(FIELD_DEFINITIONS_TABLE_NAME)
+      .insert(fieldRows);
+
+    if (fieldError) {
+      console.error(fieldError);
+      return new Response(
+        JSON.stringify({ error: "Failed to upsert field definitions" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+  }
+
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 export default async (req: Request, context: Context) => {
   if (!_supabase) {
     return new Response(
@@ -312,8 +401,8 @@ export default async (req: Request, context: Context) => {
         return getOneOrMany(context);
       case "POST":
         return createDefinitionFromPrompt(req, context);
-      // case "PUT":
-      //   updateEntry(req, context);
+      case "PUT":
+        return updateDefinition(req, context);
       // case "DELETE":
       //   return deleteEntry(context);
       default:

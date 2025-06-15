@@ -19,7 +19,7 @@ const AgendaPage: FC = () => {
   const { entries, updateEntry } = useEntries();
 
   const [selectedEntry, setSelectedEntry] = useState<Entry | null>(null);
-  const definitions = useEntryDefinitions();
+  const { definitions } = useEntryDefinitions();
 
   const entriesByYearMonthDay = groupByYearMonthDay(entries);
 

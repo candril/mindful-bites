@@ -15,7 +15,7 @@ import { Entry, useEntries } from "@/data/useStorage";
 import { format } from "date-fns/format";
 import { isSameDay } from "date-fns/isSameDay";
 import { X } from "lucide-react";
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useParams } from "wouter";
 
@@ -29,7 +29,7 @@ export const EditDrawer: FC<{
   const getDayEntries = (date: Date) =>
     filteredEntries.filter((e) => isSameDay(e.date, date));
 
-  const definitions = useEntryDefinitions();
+  const { definitions } = useEntryDefinitions();
 
   const { definitionId: definitionIdFromParams } = useParams();
   const { entries, updateEntry, deleteEntry } = useEntries();
@@ -44,8 +44,59 @@ export const EditDrawer: FC<{
     : entries.filter((e) => e.definitionId === definitionId);
 
   const dayEntries = selectedDay ? getDayEntries(selectedDay.date) : [];
-
   const definition = definitions?.find((d) => d.id === definitionId);
+
+  const getContent = useCallback(() => {
+    if (!definition) {
+      return null;
+    }
+
+    if (selectedEntry) {
+      return (
+        <EntryForm
+          entry={selectedEntry}
+          definition={definition}
+          onSubmit={async (entry: Entry) => {
+            try {
+              reset();
+              await updateEntry(entry);
+              return true;
+            } catch {
+              toast.error("Oops, entry could not be stored!");
+              return false;
+            }
+          }}
+        />
+      );
+    }
+
+    if (dayEntries.length && showEntryPicker) {
+      return (
+        <EntryPicker
+          entries={dayEntries}
+          onAddClick={() => setShowEntryPicker(false)}
+          onEntryClick={(entry) => setSelectedEntry(entry)}
+          onRemoveClick={async (entry) => {
+            try {
+              reset();
+              await deleteEntry(entry.id);
+            } catch {
+              toast.error("Ooops, could not delete the entry");
+            }
+          }}
+        />
+      );
+    }
+
+    return null;
+  }, [
+    dayEntries,
+    definition,
+    deleteEntry,
+    selectedEntry,
+    showEntryPicker,
+    updateEntry,
+  ]);
 
   function reset() {
     setSelectedEntry(null);
@@ -97,49 +148,4 @@ export const EditDrawer: FC<{
       onOpenChange={(open) => !open && reset()}
     />
   );
-
-  function getContent() {
-    if (!definition) {
-      return null;
-    }
-
-    if (selectedEntry) {
-      return (
-        <EntryForm
-          entry={selectedEntry}
-          definition={definition}
-          onSubmit={async (entry: Entry) => {
-            try {
-              reset();
-              await updateEntry(entry);
-              return true;
-            } catch {
-              toast.error("Oops, entry could not be stored!");
-              return false;
-            }
-          }}
-        />
-      );
-    }
-
-    if (dayEntries.length && showEntryPicker) {
-      return (
-        <EntryPicker
-          entries={dayEntries}
-          onAddClick={() => setShowEntryPicker(false)}
-          onEntryClick={(entry) => setSelectedEntry(entry)}
-          onRemoveClick={async (entry) => {
-            try {
-              reset();
-              await deleteEntry(entry.id);
-            } catch {
-              toast.error("Ooops, could not delete the entry");
-            }
-          }}
-        />
-      );
-    }
-
-    return null;
-  }
 };

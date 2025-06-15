@@ -54,7 +54,7 @@ async function createEntryRemote(entry: Entry, userToken: string) {
 export function useEntries() {
   const token = useToken();
   const { data, mutate } = useData<Entry[]>(`/api/users/${token}/entries`);
-  const definitions = useEntryDefinitions();
+  const { definitions } = useEntryDefinitions();
 
   const entries = useMemo(() => {
     const definitionMap = new Map<string, EntryDefinition>(
@@ -125,5 +125,6 @@ export function useEntries() {
     createEntry,
     updateEntry,
     deleteEntry,
+    mutate,
   };
 }

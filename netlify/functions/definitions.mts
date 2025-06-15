@@ -287,6 +287,43 @@ Use uuid as IDs for all elments
   }
 }
 
+async function deleteDefinition(context: Context) {
+  const { token, id } = context.params;
+  if (!token || !id) {
+    return new Response(
+      JSON.stringify({ error: "Missing user token or definition id" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  const supabase = getClient();
+
+  const { error: mealEntriesError } = await supabase
+    .from(ENTRY_DEFINITIONS_TABLE_NAME)
+    .delete()
+    .eq("id", id)
+    .eq("user_token", token);
+
+  if (mealEntriesError) {
+    console.error(mealEntriesError);
+    return new Response(
+      JSON.stringify({ error: "Failed to delete meal entries" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  return new Response(JSON.stringify({ success: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 async function updateDefinition(req: Request, context: Context) {
   const { token, id } = context.params;
   if (!token || !id) {
@@ -403,8 +440,8 @@ export default async (req: Request, context: Context) => {
         return createDefinitionFromPrompt(req, context);
       case "PUT":
         return updateDefinition(req, context);
-      // case "DELETE":
-      //   return deleteEntry(context);
+      case "DELETE":
+        return deleteDefinition(context);
       default:
         return new Response("Method not allowed", {
           status: 405, // Method Not Allowed
@@ -421,28 +458,6 @@ export default async (req: Request, context: Context) => {
     );
   }
 };
-
-function mapToDbEntry(entry: EntryDefinition) {
-  return {
-    id: entry.id,
-    name: entry.name,
-    description: entry.description,
-    icon_name: entry.iconName,
-    title_template: entry.titleTemplate,
-    subtitle_template: entry.subtitleTemplate,
-    rating_expression: entry.ratingExpression,
-    field_definitions: entry.fields.map((field) => ({
-      default_value: field.defaultValue,
-      description: field.description,
-      id: field.id,
-      label: field.label,
-      name: camelToSnake(field.name),
-      order: field.order,
-      type: field.type,
-      choices: field.choices,
-    })),
-  };
-}
 
 function mapToEntry(
   dbEntry: any,

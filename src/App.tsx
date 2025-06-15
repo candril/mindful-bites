@@ -7,7 +7,8 @@ import StatisticsPage from "./pages/StatisticsPage";
 import AboutPage from "./pages/AboutPage";
 import { Toaster } from "./components/ui/sonner";
 import ErrorBoundary from "./components/ErrorBoundary";
-import NewDefinitionPage from "./pages/NewDefinition";
+import NewDefinitionPage from "./pages/NewDefinitionPage";
+import DefinitionListPage from "./pages/DefinitionListPage";
 
 function App() {
   return (
@@ -20,7 +21,11 @@ function App() {
                 <CalendarPage />
               </Route>
 
-              <Route path="/new">
+              <Route path="/definitions">
+                <DefinitionListPage />
+              </Route>
+
+              <Route path="/definitions/new">
                 <NewDefinitionPage />
               </Route>
 

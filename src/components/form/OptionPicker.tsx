@@ -38,6 +38,7 @@ export function OptionPicker({
   columns = 4,
   variant = "default",
 }: OptionPickerProps) {
+  console.log({ options, value, onChange, variant });
   return (
     <div className={`grid ${columnClasses[columns] ?? "grid-cols-3"} gap-1.5`}>
       {options.map((option) => (
@@ -53,8 +54,9 @@ export function OptionPicker({
             value === option.value &&
               variant === "color" &&
               option.color &&
-              `${optionColorMap[option.color]}` &&
-              `${optionColorMap[option.color]} text-white`,
+              (optionColorMap[option.color]
+                ? `${optionColorMap[option.color]} text-white`
+                : `bg-[${option.color}] text-white`), // Use arbitrary value for hex
             value === option.value &&
               variant === "dark" &&
               "bg-gray-900 text-white",

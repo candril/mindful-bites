@@ -17,7 +17,7 @@ const CalendarPage: FC = () => {
 
   const showCombinedRatings = usePreviewFeature("combined-rating");
 
-  const definitions = useEntryDefinitions();
+  const { definitions } = useEntryDefinitions();
 
   const { definitionId: definitionIdFromParams } = useParams();
   const { entries } = useEntries();

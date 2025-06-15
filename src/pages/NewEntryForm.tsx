@@ -11,7 +11,7 @@ export const NewEntryForm: FC<{
   onSubmit: (data: Entry) => Promise<boolean>;
 }> = ({ date, definitionId, onSubmit }) => {
   const token = useToken();
-  const definitions = useEntryDefinitions();
+  const { definitions } = useEntryDefinitions();
 
   const definition = definitions?.find((d) => d.id === definitionId);
   const fields = definition?.fields;
@@ -23,6 +23,7 @@ export const NewEntryForm: FC<{
   return (
     <EntryForm
       entry={createDefaultEntry(date, token, definition)}
+      definition={definition}
       onSubmit={onSubmit}
     />
   );

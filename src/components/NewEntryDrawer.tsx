@@ -19,7 +19,7 @@ export const NewEntryDrawer: FC<{
   const token = useToken();
   const { createEntry } = useEntries();
 
-  const definitions = useEntryDefinitions();
+  const { definitions } = useEntryDefinitions();
   const [selectedDefinitionId, setSelectedDefinition] = useState<string | null>(
     null,
   );

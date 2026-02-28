@@ -7,6 +7,7 @@ import StatisticsPage from "./pages/StatisticsPage";
 import AboutPage from "./pages/AboutPage";
 import { Toaster } from "./components/ui/sonner";
 import ErrorBoundary from "./components/ErrorBoundary";
+import NewDefinitionPage from "./pages/NewDefinition";
 
 function App() {
   return (
@@ -17,6 +18,10 @@ function App() {
             <Switch>
               <Route path="/calendar/:definitionId?">
                 <CalendarPage />
+              </Route>
+
+              <Route path="/new">
+                <NewDefinitionPage />
               </Route>
 
               <Route path="/agenda">
